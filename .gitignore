@@ -1,0 +1,32 @@
+# Documentation
+*.md
+
+# PHP
+vendor/
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache
+*.log
+
+# Storage
+storage/*
+!storage/.gitkeep
+stockage/*
+!stockage/.gitkeep
+
+# Tests
+coverage/
+.phpunit.result.cache

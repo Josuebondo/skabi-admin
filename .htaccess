@@ -1,0 +1,14 @@
+
+# Redirection vers public/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Empêcher l'accès direct aux fichiers sensibles
+<FilesMatch "\.(env|config|log)$">
+    Deny from all
+</FilesMatch>
+

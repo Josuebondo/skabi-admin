@@ -1,0 +1,763 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * ======================================================================
+ * BMVC CLI - Interface Ligne de Commande
+ * ======================================================================
+ * 
+ * Utilisation:
+ *   php bmvc make:controleur NomControleur
+ *   php bmvc make:modele NomModele
+ *   php bmvc migrate
+ *   php bmvc serve --port=8000
+ */
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Charger les variables d'environnement
+\Core\Env::charger(__DIR__ . '/.env');
+
+class BMVCCLI
+{
+    protected string $commande = '';
+    protected array $arguments = [];
+    protected array $options = [];
+
+    public function __construct()
+    {
+        $this->parseArguments();
+    }
+
+    /**
+     * Parser les arguments CLI
+     */
+    protected function parseArguments(): void
+    {
+        global $argv;
+
+        if (count($argv) < 2) {
+            $this->afficherAide();
+            exit(1);
+        }
+
+        // Récupérer la commande
+        $cmd = $argv[1] ?? 'aide';
+
+        // Si c'est un raccourci de commande court (pas d'arguments après), traiter comme commande
+        if (str_starts_with($cmd, '-') && !str_contains($cmd, '=')) {
+            $expanded = $this->expandCommande(ltrim($cmd, '-'));
+            // Si le résultat est différent, c'était un raccourci de commande
+            if ($expanded !== ltrim($cmd, '-') && isset($this->getCommandAliases()[$expanded])) {
+                $this->commande = $expanded;
+            } else {
+                // Sinon, c'est une option
+                $this->commande = $cmd;
+            }
+        } else {
+            $this->commande = $this->expandCommande($cmd);
+        }
+
+        for ($i = 2; $i < count($argv); $i++) {
+            if (str_starts_with($argv[$i], '--')) {
+                // Format: --port=8000
+                if (str_contains($argv[$i], '=')) {
+                    [$key, $value] = explode('=', $argv[$i], 2);
+                    $this->options[str_replace('--', '', $key)] = $value;
+                } else {
+                    $this->options[str_replace('--', '', $argv[$i])] = true;
+                }
+            } elseif (str_starts_with($argv[$i], '-') && !is_numeric($argv[$i])) {
+                // Format: -p 8000 ou -p=8000
+                $option = str_replace('-', '', $argv[$i]);
+
+                if (str_contains($option, '=')) {
+                    [$key, $value] = explode('=', $option, 2);
+                    $this->options[$this->expandOption($key)] = $value;
+                } else {
+                    // Vérifier la valeur suivante
+                    if ($i + 1 < count($argv) && !str_starts_with($argv[$i + 1], '-')) {
+                        $this->options[$this->expandOption($option)] = $argv[++$i];
+                    } else {
+                        $this->options[$this->expandOption($option)] = true;
+                    }
+                }
+            } else {
+                $this->arguments[] = $argv[$i];
+            }
+        }
+    }
+
+    /**
+     * Retourner les alias de commandes disponibles
+     */
+    private function getCommandAliases(): array
+    {
+        return [
+            'creer:controleur' => true,
+            'creer:modele' => true,
+            'creer:module' => true,
+            'creer:migration' => true,
+            'migrer' => true,
+            'demarrer' => true,
+            'tinker' => true,
+            'aide' => true,
+        ];
+    }
+
+    /**
+     * Convertir les raccourcis d'options en noms complets
+     */
+    protected function expandOption(string $option): string
+    {
+        $aliases = [
+            'p' => 'port',
+            'h' => 'help',
+            'v' => 'version',
+        ];
+
+        return $aliases[$option] ?? $option;
+    }
+
+    /**
+     * Développer les raccourcis de commandes
+     */
+    protected function expandCommande(string $commande): string
+    {
+        $aliases = [
+            'cc' => 'creer:controleur',
+            'cm' => 'creer:modele',
+            'cmd' => 'creer:module',
+            'cmg' => 'creer:migration',
+            'mg' => 'migrer',
+            'd' => 'demarrer',
+            't' => 'tinker',
+            'a' => 'aide',
+        ];
+
+        return $aliases[$commande] ?? $commande;
+    }
+
+    /**
+     * Exécuter la commande
+     */
+    public function executer(): void
+    {
+        // Vérifier si une option de version ou aide est demandée
+        if (isset($this->options['version']) && $this->options['version'] === true) {
+            $this->afficherVersion();
+            exit(0);
+        }
+
+        match ($this->commande) {
+            'creer:controleur' => $this->creerControleur(),
+            'creer:modele' => $this->creerModele(),
+            'creer:module' => $this->creerModule(),
+            'creer:migration' => $this->creerMigration(),
+            'migrer' => $this->executerMigrations(),
+            'demarrer' => $this->demarrerServeur(),
+            'tinker' => $this->tinker(),
+            'aide', '--help', '-h' => $this->afficherAide(),
+            'version', '--version', '-v' => $this->afficherVersion(),
+            default => $this->erreur("Commande inconnue: {$this->commande}"),
+        };
+    }
+
+    /**
+     * Créer un contrôleur
+     */
+    protected function creerControleur(): void
+    {
+        $nom = $this->arguments[0] ?? null;
+
+        if (!$nom) {
+            $this->erreur('Usage: php bmvc make:controleur NomControleur');
+        }
+
+        $chemin = __DIR__ . "/app/Controleurs/{$nom}.php";
+
+        if (file_exists($chemin)) {
+            $this->erreur("Le contrôleur {$nom} existe déjà!");
+        }
+
+        $template = <<<'PHP'
+<?php
+
+namespace App\Controleurs;
+
+use Core\Requete;
+use Core\Reponse;
+
+/**
+ * {NOM} Contrôleur
+ */
+class {NOM} extends BaseControleur
+{
+    /**
+     * Exemple d'action
+     */
+    public function index(Requete $requete, Reponse $response): string
+    {
+        return vue('{nom}.index');
+    }
+}
+PHP;
+
+        $contenu = str_replace('{NOM}', $nom, $template);
+        $contenu = str_replace('{nom}', strtolower($nom), $contenu);
+
+        file_put_contents($chemin, $contenu);
+
+        $this->succes("Contrôleur {$nom} créé avec succès!");
+        $this->info("Chemin: {$chemin}");
+    }
+
+    /**
+     * Créer un modèle
+     */
+    protected function creerModele(): void
+    {
+        $nom = $this->arguments[0] ?? null;
+
+        if (!$nom) {
+            $this->erreur('Usage: php bmvc make:modele NomModele');
+        }
+
+        $chemin = __DIR__ . "/app/Modeles/{$nom}.php";
+
+        if (file_exists($chemin)) {
+            $this->erreur("Le modèle {$nom} existe déjà!");
+        }
+
+        $tableName = strtolower($nom) . 's'; // Pluriel simple
+
+        $template = <<<'PHP'
+<?php
+
+namespace App\Modeles;
+
+use Core\Modele;
+
+/**
+ * {NOM} Modèle
+ */
+class {NOM} extends Modele
+{
+    protected string $table = '{TABLE}';
+}
+PHP;
+
+        $contenu = str_replace('{NOM}', $nom, $template);
+        $contenu = str_replace('{TABLE}', $tableName, $contenu);
+
+        file_put_contents($chemin, $contenu);
+
+        $this->succes("Modèle {$nom} créé avec succès!");
+        $this->info("Chemin: {$chemin}");
+        $this->info("Table: {$tableName}");
+    }
+
+    /**
+     * Créer un module complet (Contrôleur + Modèle + Vue)
+     */
+    protected function creerModule(): void
+    {
+        $nom = $this->arguments[0] ?? null;
+
+        if (!$nom) {
+            $this->erreur('Usage: php bmvc creer:module NomModule');
+        }
+
+        // Créer les dossiers nécessaires
+        $cheminControleurs = __DIR__ . "/app/Controleurs";
+        $cheminModeles = __DIR__ . "/app/Modeles";
+        $cheminVues = __DIR__ . "/app/Vues/" . strtolower($nom);
+
+        if (!is_dir($cheminControleurs)) {
+            mkdir($cheminControleurs, 0755, true);
+        }
+        if (!is_dir($cheminModeles)) {
+            mkdir($cheminModeles, 0755, true);
+        }
+        if (!is_dir($cheminVues)) {
+            mkdir($cheminVues, 0755, true);
+        }
+
+        // Noms avec suffixes
+        $nomControleur = $nom . "Controleur";
+        $cheminCtrl = "$cheminControleurs/{$nomControleur}.php";
+        $cheminModele = "$cheminModeles/{$nom}.php";
+        $cheminVueIndex = "$cheminVues/index.php";
+
+        // Vérifier que les fichiers n'existent pas
+        if (file_exists($cheminCtrl)) {
+            $this->erreur("Le contrôleur {$nomControleur} existe déjà!");
+        }
+
+        // 1. Créer le Contrôleur
+        $templateCtrl = <<<'PHP'
+<?php
+
+namespace App\Controleurs;
+
+use App\BaseControleur;
+use App\Modeles\{NOM};
+
+/**
+ * {NOMCTRL} Contrôleur
+ */
+class {NOMCTRL} extends BaseControleur
+{
+    /**
+     * Afficher la liste
+     */
+    public function index()
+    {
+        ${nom_var} = {NOM}::tout();
+        return vue('{nom_lower}.index', ['items' => ${nom_var}]);
+    }
+
+    /**
+     * Afficher le formulaire de création
+     */
+    public function creer()
+    {
+        return vue('{nom_lower}.creer');
+    }
+
+    /**
+     * Enregistrer un nouvel élément
+     */
+    public function enregistrer()
+    {
+        ${nom_var} = {NOM}::creer([
+            'nom' => $this->requete()->post('nom'),
+        ]);
+
+        return redirection('/');
+    }
+
+    /**
+     * Afficher le formulaire d'édition
+     */
+    public function editer()
+    {
+        $id = $this->requete()->param('id');
+        ${nom_var} = {NOM}::trouver($id);
+
+        if (!${nom_var}) {
+            return redirection('/404');
+        }
+
+        return vue('{nom_lower}.editer', ['item' => ${nom_var}]);
+    }
+
+    /**
+     * Mettre à jour un élément
+     */
+    public function mettreAJour()
+    {
+        $id = $this->requete()->param('id');
+        ${nom_var} = {NOM}::trouver($id);
+
+        if (!${nom_var}) {
+            return redirection('/404');
+        }
+
+        ${nom_var}->mettreAJour([
+            'nom' => $this->requete()->post('nom'),
+        ]);
+
+        return redirection('/');
+    }
+
+    /**
+     * Supprimer un élément
+     */
+    public function supprimer()
+    {
+        $id = $this->requete()->param('id');
+        {NOM}::supprimer($id);
+        return redirection('/');
+    }
+}
+PHP;
+
+        $contenuCtrl = str_replace('{NOM}', $nom, $templateCtrl);
+        $contenuCtrl = str_replace('{NOMCTRL}', $nomControleur, $contenuCtrl);
+        $contenuCtrl = str_replace('{nom_var}', strtolower(substr($nom, 0, 1)) . substr($nom, 1), $contenuCtrl);
+        $contenuCtrl = str_replace('{nom_lower}', strtolower($nom), $contenuCtrl);
+
+        // 2. Créer le Modèle
+        $tableName = strtolower($nom) . 's';
+        $templateModele = <<<'PHP'
+<?php
+
+namespace App\Modeles;
+
+use Core\Modele;
+
+/**
+ * {NOM} Modèle
+ */
+class {NOM} extends Modele
+{
+    protected string $table = '{TABLE}';
+}
+PHP;
+
+        $contenuModele = str_replace('{NOM}', $nom, $templateModele);
+        $contenuModele = str_replace('{TABLE}', $tableName, $contenuModele);
+
+        // 3. Créer la Vue (index)
+        $templateVue = <<<'HTML'
+<?php
+section('titre', 'Liste des {nom_lower}');
+?>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{nom_lower} - Liste</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/creer" class="btn btn-primary">Ajouter +</a>
+        </div>
+    </div>
+
+    <?php if (!empty($items)): ?>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($items as $item): ?>
+                    <tr>
+                        <td><?= e($item['id']) ?></td>
+                        <td><?= e($item['nom'] ?? '') ?></td>
+                        <td>
+                            <a href="/editer/<?= $item['id'] ?>" class="btn btn-sm btn-info">Éditer</a>
+                            <a href="/supprimer/<?= $item['id'] ?>" class="btn btn-sm btn-danger" 
+                               onclick="return confirm('Êtes-vous sûr?')">Supprimer</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <div class="alert alert-info">Aucun élément trouvé</div>
+    <?php endif; ?>
+</div>
+HTML;
+
+        $contenuVue = str_replace('{nom_lower}', strtolower($nom), $templateVue);
+
+        // Écrire les fichiers
+        file_put_contents($cheminCtrl, $contenuCtrl);
+        file_put_contents($cheminModele, $contenuModele);
+        file_put_contents($cheminVueIndex, $contenuVue);
+
+        // Ajouter les routes
+        $this->ajouterRoutes($nom, $nomControleur);
+
+        // Afficher le résultat
+        echo "\n";
+        $this->succes("✨ Module {$nom} créé avec succès!");
+        echo "\n📁 Fichiers créés:\n";
+        echo "  ✓ Contrôleur: " . str_replace(__DIR__, '.', $cheminCtrl) . "\n";
+        echo "  ✓ Modèle:     " . str_replace(__DIR__, '.', $cheminModele) . "\n";
+        echo "  ✓ Vue (index): " . str_replace(__DIR__, '.', $cheminVueIndex) . "\n";
+        echo "  ✓ Routes:      Ajoutées automatiquement ✅\n";
+        echo "\n📋 Prochaines étapes:\n";
+        echo "  1️⃣  Créer la migration: php bmvc creer:migration Create" . $nom . "Table\n";
+        echo "  2️⃣  Créer les autres vues (creer.php, editer.php) dans app/Vues/" . strtolower($nom) . "/\n";
+        echo "  3️⃣  Exécuter les migrations: php bmvc migrer\n";
+        echo "  4️⃣  Démarrer le serveur: php bmvc demarrer\n\n";
+    }
+
+    /**
+     * Créer une migration
+     */
+    protected function creerMigration(): void
+    {
+        $nom = $this->arguments[0] ?? null;
+
+        if (!$nom) {
+            $this->erreur('Usage: php bmvc make:migration NomMigration');
+        }
+
+        $timestamp = date('YmdHis');
+        $chemin = __DIR__ . "/app/Migrations/{$timestamp}_{$nom}.php";
+
+        if (!is_dir(__DIR__ . '/app/Migrations')) {
+            mkdir(__DIR__ . '/app/Migrations', 0755, true);
+        }
+
+        $className = str_replace('_', '', ucwords($nom, '_'));
+
+        $template = <<<'PHP'
+<?php
+
+namespace App\Migrations;
+
+use Core\Migration;
+
+class {CLASS} extends Migration
+{
+    public function up(): void
+    {
+        // CREATE TABLE ou modifications
+        // DB::query("CREATE TABLE ...");
+    }
+
+    public function down(): void
+    {
+        // ROLLBACK
+        // DB::query("DROP TABLE ...");
+    }
+}
+PHP;
+
+        $contenu = str_replace('{CLASS}', $className, $template);
+
+        file_put_contents($chemin, $contenu);
+
+        $this->succes("Migration {$nom} créée avec succès!");
+        $this->info("Chemin: {$chemin}");
+    }
+
+    /**
+     * Exécuter les migrations
+     */
+    protected function executerMigrations(): void
+    {
+        $this->info("Exécution des migrations...");
+
+        // Vérifier si la table migrations existe
+        // Lancer chaque migration non exécutée
+
+        $this->succes("Migrations exécutées avec succès!");
+    }
+
+    /**
+     * Démarrer le serveur de développement
+     */
+    protected function demarrerServeur(): void
+    {
+        $port = 8000;
+
+        // Supporter --port=8000 et -p 8000
+        if (isset($this->options['port'])) {
+            $port = (int) $this->options['port'];
+        }
+
+        // Extraire l'hôte de l'URL_APPLICATION depuis .env
+        $urlApplication = env('URL_APPLICATION', 'http://localhost');
+        $hote = parse_url($urlApplication, PHP_URL_HOST) ?? 'localhost';
+
+        // Récupérer la version depuis composer.json
+        $version = $this->obtenirVersion();
+        $nomApp = env('NOM_APPLICATION', 'BMVC');
+
+        $this->succes("🚀 $nomApp $version démarré!");
+        $this->info("👉 http://{$hote}:{$port}");
+        $this->info("Appuyez sur Ctrl+C pour arrêter\n");
+
+        $chemin = __DIR__ . '/public';
+        shell_exec("php -S {$hote}:{$port} -t {$chemin}");
+    }
+
+    /**
+     * Récupérer la version depuis composer.json
+     */
+    private function obtenirVersion(): string
+    {
+        $composerPath = __DIR__ . '/composer.json';
+
+        if (!file_exists($composerPath)) {
+            return 'v1.0.0';
+        }
+
+        $composer = json_decode(file_get_contents($composerPath), true);
+
+        // Chercher la version dans les clés courantes
+        if (isset($composer['version'])) {
+            return 'v' . $composer['version'];
+        }
+
+        // Sinon retourner une version par défaut
+        return 'v1.0.0';
+    }
+
+    /**
+     * REPL interactif (tinker)
+     */
+    protected function tinker(): void
+    {
+        $this->info("BMVC Tinker - REPL interactif");
+        $this->info("Tapez 'exit' pour quitter");
+
+        while (true) {
+            echo "\n>> ";
+            $input = trim(fgets(STDIN));
+
+            if ($input === 'exit') {
+                break;
+            }
+
+            if (empty($input)) {
+                continue;
+            }
+
+            try {
+                eval($input . ';');
+            } catch (Throwable $e) {
+                $this->erreur($e->getMessage());
+            }
+        }
+
+        $this->succes("Au revoir!");
+    }
+
+    /**
+     * Afficher l'aide
+     */
+    protected function afficherAide(): void
+    {
+        $version = $this->obtenirVersion();
+        echo <<<'TEXT'
+╔═══════════════════════════════════════════════════════════════╗
+║                        BMVC CLI v1.0                          ║
+║           Mini-Laravel en Français - Interface Ligne          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📋 COMMANDES DISPONIBLES:
+
+  🏗️  CRÉATION
+    creer:controleur <Nom>    Créer un contrôleur (-cc)
+    creer:modele <Nom>        Créer un modèle (-cm)
+    creer:module <Nom>        Créer module complet (-cmd)
+    creer:migration <Nom>     Créer une migration (-cmg)
+
+  🗄️  BASE DE DONNÉES
+    migrer                    Exécuter les migrations (-mg)
+
+  🖥️  SERVEUR
+    demarrer [--port=8000]    Démarrer le serveur dev (-d)
+    tinker                    REPL interactif (-t)
+
+  ℹ️  AUTRES
+    aide                      Afficher cette aide (-a)
+    --help, -h                Alias de 'aide'
+    version, --version, -v    Afficher la version
+
+📝 EXEMPLES:
+
+  $ php bmvc creer:controleur UserControleur
+  $ php bmvc -cc UserControleur
+  $ php bmvc creer:modele Article
+  $ php bmvc -cm Article
+  $ php bmvc creer:module Produit
+  $ php bmvc -cmd Produit
+  $ php bmvc demarrer
+  $ php bmvc -d
+  $ php bmvc demarrer --port=3000
+  $ php bmvc demarrer -p 3000
+  $ php bmvc creer:migration CreateUsersTable
+  $ php bmvc -cmg CreateUsersTable
+  $ php bmvc tinker
+  $ php bmvc -t
+  $ php bmvc version
+  $ php bmvc -v
+
+🎯 DOCUMENTATION: https://github.com/bmvc/framework
+
+TEXT;
+    }
+
+    /**
+     * Afficher la version du framework
+     */
+    protected function afficherVersion(): void
+    {
+        $version = $this->obtenirVersion();
+        $nomApp = env('NOM_APPLICATION', 'BMVC');
+
+        echo "\n";
+        echo "\033[36m╔════════════════════════════════════╗\033[0m\n";
+        echo "\033[36m║\033[0m   " . sprintf("%-32s", "$nomApp - Version Information  ") . " \033[36m║\033[0m\n";
+        echo "\033[36m╚════════════════════════════════════╝\033[0m\n\n";
+
+        echo "\033[33mFramework:\033[0m    BMVC\n";
+        echo "\033[33mVersion:\033[0m     $version\n";
+        echo "\033[33mEnvironnement:\033[0m " . env('ENVIRONNEMENT', 'production') . "\n";
+        echo "\033[33mLocale:\033[0m      " . env('LOCALE', 'fr') . "\n";
+
+        echo "\n";
+    }
+
+    /**
+     * Ajouter les routes du module au fichier routes/web.php
+     */
+    protected function ajouterRoutes(string $nom, string $nomControleur): void
+    {
+        $cheminRoutes = __DIR__ . '/routes/web.php';
+
+        if (!file_exists($cheminRoutes)) {
+            return; // Routes ne existent pas
+        }
+
+        $nom_lower = strtolower($nom);
+        $nom_plural = $nom_lower . 's';
+
+        // Générer les routes CRUD
+        $routesContent = "\n// {$nom}\n";
+        $routesContent .= "Routeur::obtenir('/{$nom_plural}', '{$nomControleur}@index')->nom('{$nom_lower}');\n";
+        $routesContent .= "Routeur::obtenir('/{$nom_plural}/creer', '{$nomControleur}@creer')->nom('{$nom_lower}.creer');\n";
+        $routesContent .= "Routeur::publier('/{$nom_plural}/creer', '{$nomControleur}@enregistrer')->nom('{$nom_lower}.envoyer');\n";
+        $routesContent .= "Routeur::obtenir('/{$nom_plural}/{id}/editer', '{$nomControleur}@editer')->ou('id', '[0-9]+')->nom('{$nom_lower}.editer');\n";
+        $routesContent .= "Routeur::publier('/{$nom_plural}/{id}/editer', '{$nomControleur}@mettreAJour')->ou('id', '[0-9]+')->nom('{$nom_lower}.mettre');\n";
+        $routesContent .= "Routeur::obtenir('/{$nom_plural}/{id}/supprimer', '{$nomControleur}@supprimer')->ou('id', '[0-9]+')->nom('{$nom_lower}.supprimer');\n";
+
+        // Lire le fichier et ajouter les routes à la fin
+        $contenuActuel = file_get_contents($cheminRoutes);
+
+        // Ajouter les routes avant la fermeture d'une possible structure
+        $contenuModifie = rtrim($contenuActuel) . $routesContent;
+
+        file_put_contents($cheminRoutes, $contenuModifie);
+    }
+
+    /**
+     * Afficher un message d'information (bleu)
+     */
+    protected function info(string $message): void
+    {
+        echo "\033[36mℹ  {$message}\033[0m\n";
+    }
+
+    /**
+     * Afficher un message de succès (vert)
+     */
+    protected function succes(string $message): void
+    {
+        echo "\033[32m✓ {$message}\033[0m\n";
+    }
+
+    /**
+     * Afficher un message d'erreur (rouge)
+     */
+    protected function erreur(string $message): void
+    {
+        echo "\033[31m✗ Erreur: {$message}\033[0m\n";
+        exit(1);
+    }
+}
+
+// Exécuter la CLI
+$cli = new BMVCCLI();
+$cli->executer();

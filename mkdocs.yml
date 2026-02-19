@@ -1,0 +1,142 @@
+site_name: BMVC Framework
+site_url: https://bmvc-framework.dev
+repo_url: https://github.com/bmvc/bmvc
+repo_name: BMVC Framework
+edit_uri: edit/main/docs/
+
+# Theme
+theme:
+  name: material
+  language: fr
+  favicon: https://via.placeholder.com/16
+  logo: https://via.placeholder.com/40
+  icon:
+    repo: fontawesome/brands/github
+
+  # Color scheme
+  palette:
+    - scheme: light
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
+
+    - scheme: dark
+      primary: deep orange
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+
+  # Features
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+
+# Navigation
+nav:
+  - Accueil: index.md
+
+  - 🚀 Démarrage:
+      - Vue d'ensemble: guides/getting-started/START_HERE.md
+      - Installation rapide: guides/getting-started/QUICKSTART.md
+      - Gestion du serveur: guides/getting-started/SERVEUR_GUIDE.md
+
+  - 📖 Utilisation:
+      - Guide complet: guides/usage/GUIDE_UTILISATION.md
+      - Exemple Blog: guides/usage/EXEMPLE_BLOG_COMPLET.md
+      - Architecture du projet: guides/usage/PROJECT_MANIFEST.md
+
+  - 🧪 Tests & Qualité:
+      - Guide des tests: guides/testing/GUIDE_TESTS_EXECUTION.md
+      - Tests et packaging: guides/testing/PHASE8_TESTS_PACKAGING.md
+      - Résumé final Phase 8: guides/testing/RESUME_FINAL_PHASE8.md
+
+  - 🚀 Déploiement:
+      - Guide production: guides/deployment/GUIDE_PRODUCTION.md
+      - Déploiement rapide: guides/deployment/PRODUCTION_RAPIDE.md
+      - Checklist déploiement: guides/deployment/DEPLOYMENT_CHECKLIST.md
+      - Versioning: guides/deployment/VERSIONING.md
+
+  - 📦 Distribution:
+      - Packagist complet: guides/packaging/GUIDE_PACKAGIST.md
+      - Packagist rapide: guides/packaging/PACKAGIST_RAPIDE.md
+
+  - 🔌 Référence API:
+      - Requete: api/Requete.md
+      - Reponse: api/Reponse.md
+      - Routeur: api/Routeur.md
+      - Modele (ORM): api/Modele.md
+      - Validation: api/Validation.md
+      - Traduction (i18n): api/Traduction.md
+
+  - 💡 Exemples:
+      - Blog complet: examples/blog-example/
+      - API REST: examples/api-rest.md
+      - Authentification: examples/authentication.md
+      - Tests: examples/testing.md
+
+  - 📞 Support:
+      - FAQ: support/faq.md
+      - Ressources: support/ressources.md
+
+# Markdown extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      use_pygments: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji:
+      emoji_index: pymdownx.emoji.twemoji
+      emoji_generator: pymdownx.emoji.to_svg
+  - pymdownx.blocks.admonition
+  - pymdownx.blocks.details
+  - toc:
+      permalink: true
+  - tables
+  - abbr
+  - attr_list
+  - def_list
+  - md_in_html
+  - sane_lists
+
+# Plugins
+plugins:
+  - search:
+      lang: fr
+  - privacy
+  - minify:
+      minify_html: true
+      minify_js: false
+      minify_css: true
+      minify_json: true
+
+# Extra
+extra:
+  version:
+    provider: mike
+
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bmvc/bmvc
+      name: GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com
+      name: Twitter
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# Copyright
+copyright: Copyright &copy; 2026 BMVC Framework. All rights reserved.
