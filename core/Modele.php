@@ -27,7 +27,20 @@ use Exception;
  *   Article::creer(['titre' => 'Nouveau', 'contenu' => 'Texte']);
  */
 class Modele
+
 {
+    /**
+     * Définit les colonnes à sélectionner (avec alias possibles)
+     * @param array $colonnes
+     * @return self
+     */
+    public function selectionner(array $colonnes): self
+    {
+        $this->colonnes = $colonnes;
+        return $this;
+    }
+
+
     protected BaseBD $bd;
     protected string $table;
     protected string $clesPrimaire = 'id';
@@ -35,16 +48,14 @@ class Modele
     protected array $conditions = [];
     protected array $parametres = [];
     protected bool $existe = false;
+    protected array $jointures = [];
 
     public function __construct()
     {
         $this->bd = BaseBD::obtenir();
 
         // Deduire la table du nom de classe si non définie
-        if (!isset($this->table)) {
-            $classe = class_basename($this);
-            $this->table = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $classe)) . 's';
-        }
+
     }
 
     /**
@@ -118,7 +129,16 @@ class Modele
      */
     public function obtenir(): array
     {
-        $sql = "SELECT * FROM {$this->table}";
+        $colonnes = !empty($this->colonnes) ? implode(', ', $this->colonnes) : '*';
+        $sql = "SELECT $colonnes FROM {$this->table}";
+
+        // Ajout des jointures si présentes
+        if (isset($this->jointures) && !empty($this->jointures)) {
+            foreach ($this->jointures as $join) {
+                $type = isset($join['type']) ? $join['type'] : 'INNER JOIN';
+                $sql .= " {$type} {$join['table']} ON {$join['colonne_locale']} {$join['operateur']} {$join['colonne_etrangere']}";
+            }
+        }
 
         if (!empty($this->conditions)) {
             $sql .= " WHERE " . implode(' AND ', $this->conditions);
@@ -133,7 +153,52 @@ class Modele
             return $modele;
         }, $resultats);
     }
+    /**
+     * Ajoute une jointure INNER JOIN à la requête
+     */
+    public function joindre(string $tableNom, string $colonneLocale, string $colonneEtrangere, string $operateur = '='): self
+    {
+        return $this->ajouterJointure('INNER JOIN', $tableNom, $colonneLocale, $colonneEtrangere, $operateur);
+    }
 
+    /**
+     * Ajoute une jointure LEFT JOIN à la requête
+     */
+    public function joindreGauche(string $tableNom, string $colonneLocale, string $colonneEtrangere, string $operateur = '='): self
+    {
+        return $this->ajouterJointure('LEFT JOIN', $tableNom, $colonneLocale, $colonneEtrangere, $operateur);
+    }
+
+    /**
+     * Ajoute une jointure RIGHT JOIN à la requête
+     */
+    public function joindreDroit(string $tableNom, string $colonneLocale, string $colonneEtrangere, string $operateur = '='): self
+    {
+        return $this->ajouterJointure('RIGHT JOIN', $tableNom, $colonneLocale, $colonneEtrangere, $operateur);
+    }
+
+    /**
+     * Ajoute une jointure FULL OUTER JOIN à la requête
+     */
+    public function joindreExterne(string $tableNom, string $colonneLocale, string $colonneEtrangere, string $operateur = '='): self
+    {
+        return $this->ajouterJointure('FULL OUTER JOIN', $tableNom, $colonneLocale, $colonneEtrangere, $operateur);
+    }
+
+    /**
+     * Ajoute une jointure générique à la requête
+     */
+    protected function ajouterJointure(string $type, string $tableNom, string $colonneLocale, string $colonneEtrangere, string $operateur = '='): self
+    {
+        $this->jointures[] = [
+            'type' => $type,
+            'table' => $tableNom,
+            'colonne_locale' => $colonneLocale,
+            'colonne_etrangere' => $colonneEtrangere,
+            'operateur' => $operateur
+        ];
+        return $this;
+    }
     /**
      * Récupère le premier résultat
      */

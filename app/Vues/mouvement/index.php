@@ -85,11 +85,11 @@
                 <span class="material-icons text-white">inventory_2</span>
             </div>
             <nav class="flex-1 flex flex-col gap-4">
-                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Tableau de bord">
+                <a desabled class="w-12 h-12 flex items-center justify-center rounded-xl cursor-not-allowed text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Tableau de bord non disponible">
                     <span class="material-icons">dashboard</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Tableau de bord</span>
                 </a>
-                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Inventaire">
+                <a desabled class="w-12 h-12 flex items-center cursor-not-allowed justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Inventaire non disponible">
                     <span class="material-icons">inventory</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Inventaire</span>
                 </a>
@@ -97,14 +97,37 @@
                     <span class="material-icons">swap_horiz</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Mouvements</span>
                 </a>
-                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Rapports">
+                <a desabled class="w-12 h-12 flex items-center cursor-not-allowed justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Rapports non disponible">
                     <span class="material-icons">analytics</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Rapports</span>
                 </a>
             </nav>
-            <div class="mt-auto">
-                <img alt="Profil" class="w-10 h-10 rounded-full border-2 border-slate-700 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyJQ_lAtSKx9Vevxnse02Ch-I2_02gPsEUlqCE9rYPzNEj0FrI9SMz36ZGa12xDCoyMpJK8JUb7SCCuS0r6TzLzsCRVVEBzICNb8Dc2GyQJ5IRsYTlXqae5z1jm7EO3C74cFY90qz494eUEloPS8ZOz9zxetjxLetKc_qSR5fKzIr9XHBdSoTJZCL1WNI6xSIYE8dln9IfkLaklQfTDdRy_-hrTNoXO4TVHHC0ZI6JqQbBopqGS3aWQEcZDUI75uWMmrWWgAYfM8s" />
+            <div>
+
+                <button id="profileBtn"
+                    class="mt-auto w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-800 transition-all relative"
+                    title="Profil">
+
+                    <div id="avatarContainer"
+                        class="w-10 h-10 rounded-full border-2 border-slate-700 overflow-hidden flex items-center justify-center bg-primary text-white font-bold text-sm">
+
+                        <!-- Image si existe -->
+                        <img id="avatarImg"
+                            class="w-full h-full object-cover hidden"
+                            alt="Profil" />
+
+                        <!-- Initiales si pas d'image -->
+                        <span id="avatarInitials"></span>
+
+                    </div>
+                </button>
+
+                <!-- logout btn -->
+                <button id="logoutBtn" class="mt-4 w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" title="Déconnexion">
+                    <span class="material-icons">logout</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Déconnexion</span>
             </div>
+
         </aside>
         <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-dark-bg">
             <header class="h-16 border-b border-dark-border flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-md shrink-0">
@@ -112,10 +135,14 @@
                     <h1 class="text-lg font-bold text-white hidden lg:block">Gestion Flux</h1>
                     <div class="relative w-full max-w-md">
                         <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
-                        <input class="w-full bg-slate-800 border-slate-700 text-white rounded-lg pl-9 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-slate-500" placeholder="Rechercher..." type="text" />
+                        <input id="search-input" class="w-full bg-slate-800 border-slate-700 text-white rounded-lg pl-9 pr-4 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-slate-500" placeholder="Rechercher..." type="text" />
                     </div>
                 </div>
                 <div class="flex items-center gap-3 ml-4">
+                    <div class="flex items-center gap-2 ml-4 text-[11px] text-slate-400 font-medium">
+                        <span class="material-icons text-xs">access_time</span>
+                        <span>Dernière actualisation : <span id="dateActualisation"></span></span>
+                    </div>
                     <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800 relative text-slate-400">
                         <span class="material-icons text-lg">notifications</span>
                         <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent-coral rounded-full ring-2 ring-slate-900"></span>
@@ -153,17 +180,72 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3 bg-slate-900 border border-dark-border p-3 rounded-xl">
+                    <div class="flex flex-wrap items-center gap-3  bg-slate-900 border border-dark-border p-3 rounded-xl">
                         <div class="flex items-center gap-2 px-2 border-r border-slate-800">
                             <span class="material-icons text-slate-500 text-sm">calendar_today</span>
-                            <select class="border-none bg-transparent text-[11px] font-bold text-slate-300 focus:ring-0 p-0 pr-6">
-                                <option class="bg-slate-900">Dernières 24h</option>
-                                <option class="bg-slate-900">7 jours</option>
+                            <select id="date-filter" class="border-none bg-transparent text-[11px] font-bold text-slate-300 focus:ring-0 p-0 pr-6">
+                                <option value="" class="bg-slate-900">Tous</option>
+                                <option value="1" class="bg-slate-900">Dernières 24h</option>
+                                <option value="7" class="bg-slate-900">7 jours</option>
+                                <option value="30" class="bg-slate-900">30 jours</option>
+                                <option value="90" class="bg-slate-900">90 jours</option>
                             </select>
                         </div>
-                        <button class="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold text-slate-400 hover:bg-slate-800 rounded-lg border border-slate-700 transition-colors">
+
+                        <div id="date-text" class="flex items-center gap-2 px-2 border-r border-slate-800">
+                            <span id="date-loader" class="material-icons text-sm text-slate-500 hidden">autorenew</span>
+                            <span id="date-text-content" class="text-[11px] font-bold text-slate-300">Affichage des mouvements des 7 derniers jours</span>
+                        </div>
+                        <button id="open-filters" class="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold text-slate-400 hover:bg-slate-800 rounded-lg border border-slate-700 transition-colors">
                             <span class="material-icons text-xs">filter_list</span> FILTRES
                         </button>
+                    </div>
+                    <div id="filters-panel" class="hidden absolute right-5 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-xl p-4 z-50">
+
+                        <h3 class="text-sm font-bold text-white mb-3">Filtres avancés</h3>
+
+                        <!-- TYPE -->
+                        <div class="mb-3">
+                            <label class="text-xs text-slate-400">Type</label>
+                            <select id="filter-type" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                                <option value="">Tous</option>
+                                <option value="entrée">Entrée</option>
+                                <option value="sortie">Sortie</option>
+                                <option value="transfert">Transfert</option>
+                            </select>
+                        </div>
+
+                        <!-- STATUT -->
+                        <div class="mb-3">
+                            <label class="text-xs text-slate-400">Statut</label>
+                            <select id="filter-statut" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                                <option value="">Tous</option>
+                                <option value="validé">Validé</option>
+                                <option value="en_attente">En attente</option>
+                                <option value="annulé">Annulé</option>
+                            </select>
+                        </div>
+
+                        <!-- DATE PRECISE -->
+                        <div class="mb-3">
+                            <label class="text-xs text-slate-400">Date précise</label>
+                            <input type="date" id="filter-date"
+                                class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="flex justify-between mt-4">
+                            <button id="reset-filters"
+                                class="px-3 py-1 text-xs rounded-lg bg-slate-700 text-white">
+                                Réinitialiser
+                            </button>
+
+                            <button id="apply-filters"
+                                class="px-3 py-1 text-xs rounded-lg bg-primary text-white">
+                                Appliquer
+                            </button>
+                        </div>
+
                     </div>
                     <div class="movement-grid hidden" id="movement-grid">
                         <label class="bg-dark-surface border border-dark-border rounded-lg p-3 hover:border-primary/40 transition-all cursor-pointer group" data-target-section="section-details">
@@ -355,14 +437,18 @@
                                     <p class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Référence Document : <span id="doc-id"></span></p>
                                 </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                            <div class="lg:flex gap-2 hidden">
+                                <button title="Impression non disponible" disabled
+                                    class="px-4 py-2 cursor-not-allowed bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
                                     <span class="material-icons text-sm">print</span> Imprimer
                                 </button>
-                                <button class="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+
+                                <button disabled title="Modification non disponible"
+                                    class="px-4 py-2 bg-primary cursor-not-allowed hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
                                     <span class="material-icons text-sm">edit</span> Modifier
                                 </button>
                             </div>
+
                         </div>
                         <div class="p-8 space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -370,11 +456,11 @@
                                     <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-dark-border pb-1">Information Produit</h3>
                                     <div class="bg-dark-bg p-4 rounded-xl border border-dark-border">
                                         <p class="text-xs text-slate-400 mb-1">Désignation</p>
-                                        <p class="text-sm font-bold text-white mb-4">Processeur Ryzen 9 7950X</p>
+                                        <p class="text-sm font-bold text-white mb-4" id="article-nom">Processeur Ryzen 9 7950X</p>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <p class="text-[10px] text-slate-500">SKU</p>
-                                                <p class="text-xs font-mono font-bold text-slate-300">CPU-RYZ9-79</p>
+                                                <p class="text-xs font-mono font-bold text-slate-300">CPU-RYZ9-<span id="sku"></span></p>
                                             </div>
                                             <div>
                                                 <p class="text-[10px] text-slate-500">Catégorie</p>
@@ -420,12 +506,21 @@
                                     <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-dark-border pb-1">Détails Système</h3>
                                     <div class="bg-dark-bg p-4 rounded-xl border border-dark-border space-y-4">
                                         <div>
+                                            <p class="text-[10px] text-slate-500">Créé par</p>
+                                            <p class="text-xs font-bold text-slate-300" id="auteur"></p>
+                                        </div>
+                                        <div>
                                             <p class="text-[10px] text-slate-500">Date et Heure</p>
                                             <p class="text-xs font-bold text-slate-300" id="creatdate"></p>
                                         </div>
                                         <div>
-                                            <p class="text-[10px] text-slate-500">Créé par</p>
-                                            <p class="text-xs font-bold text-slate-300" id="auteur"></p>
+                                            <p class="text-[10px] text-slate-500">Validé par</p>
+                                            <p class="text-xs font-bold text-slate-300" id="validateur"></p>
+
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] text-slate-500">Date et Heure</p>
+                                            <p class="text-xs font-bold text-slate-300" id="v-date"></p>
                                         </div>
                                         <div>
                                             <p class="text-[10px] text-slate-500">Statut de Validation</p>
@@ -440,7 +535,7 @@
                             <div class="space-y-4">
                                 <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-dark-border pb-1">Notes &amp; Commentaires</h3>
                                 <div class="bg-dark-bg/50 p-4 rounded-xl border border-dashed border-dark-border">
-                                    <p class="text-xs text-slate-400 italic">"Transfert urgent pour réapprovisionnement de la boutique A suite à une commande client importante. Emballage renforcé requis."</p>
+                                    <p class="text-xs text-slate-400 italic" id="note">"Transfert urgent pour réapprovisionnement de la boutique A suite à une commande client importante. Emballage renforcé requis."</p>
                                 </div>
                             </div>
                         </div>
@@ -449,8 +544,14 @@
                                 Dernière modification le <span id="date"></span> par <span id="user"></span>
                             </div>
                             <div class="flex gap-4">
-                                <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">SUPPRIMER</button>
-                                <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">DUPLIQUER</button>
+                                <button id="delete-btn" class="px-4 py-2 bg-red-800 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                                    <span class="material-icons text-sm" id="d-btn-icon">delete</span> <span id="d-btntxt">SUPPRIMER</span>
+                                </button>
+
+                                <!-- <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">VALIDER</button> -->
+                                <button id="validate-btn" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                                    <span class="material-icons text-sm " id="v-btn-icon">check</span><span id="v-btntxt"> VALIDER</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -582,10 +683,10 @@
         </main>
     </div>
     <script src="/js/mouvement/sections-toggle.js"></script>
-    <!-- <script src="/js/mouvement/api.js"></script> -->
+    <script src="/js/mouvement/Auth.js"></script>
     <script type="module" src="/js/mouvement/main.js"></script>
 
-
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
 </body>
 
 </html>

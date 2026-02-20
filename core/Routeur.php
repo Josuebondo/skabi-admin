@@ -6,14 +6,14 @@ use Closure as Fermeture;
 
 /**
  * ======================================================================
- * Routeur - Gestion avancée des routes
+ * Routeur - Gestion avanc�e des routes
  * ======================================================================
- * 
- * Fonctionnalités :
+ *
+ * Fonctionnalit�s :
  * - Supports HTTP: GET, POST, PUT, DELETE, PATCH
- * - Paramètres dynamiques: /utilisateur/{id}
+ * - Param�tres dynamiques: /utilisateur/{id}
  * - Middlewares par route
- * - Groupes de routes avec préfixes
+ * - Groupes de routes avec pr�fixes
  * - Nommage des routes
  */
 class Routeur
@@ -64,7 +64,7 @@ class Routeur
     }
 
     /**
-     * Enregistre une route pour toutes les méthodes
+     * Enregistre une route pour toutes les m�thodes
      */
     public static function tous(string $chemin, $action): array
     {
@@ -78,7 +78,7 @@ class Routeur
     }
 
     /**
-     * Enregistre une route avec méthode spécifiée
+     * Enregistre une route avec m�thode sp�cifi�e
      */
     protected static function enregistrer(string $methode, string $chemin, $action): Route
     {
@@ -96,14 +96,14 @@ class Routeur
     }
 
     /**
-     * Groupe de routes avec préfixe et middlewares
+     * Groupe de routes avec pr�fixe et middlewares
      */
     public static function groupe(array $options, Fermeture $callback): void
     {
         $prefixePrecedent = self::$prefixeActuel;
         $middlewaresPrecedents = self::$middlewaresActuels;
 
-        // Appliquer le préfixe
+        // Appliquer le pr�fixe
         if (isset($options['prefixe'])) {
             self::$prefixeActuel = $prefixePrecedent . '/' . trim($options['prefixe'], '/');
         }
@@ -114,16 +114,16 @@ class Routeur
             self::$middlewaresActuels = array_merge(self::$middlewaresActuels, $middlewares);
         }
 
-        // Exécuter le callback
+        // Ex�cuter le callback
         $callback();
 
-        // Restaurer l'état précédent
+        // Restaurer l'�tat pr�c�dent
         self::$prefixeActuel = $prefixePrecedent;
         self::$middlewaresActuels = $middlewaresPrecedents;
     }
 
     /**
-     * Dispatcher la requête
+     * Dispatcher la requ�te
      */
     public function dispatcher(Requete $requete, Reponse $reponse): void
     {
@@ -135,20 +135,50 @@ class Routeur
 
         if ($route === null) {
             // Lancer une exception 404
-            throw new \Core\Exceptions\HttpNotFoundException("Page non trouvée: $chemin");
+            throw new \Core\Exceptions\HttpNotFoundException("Page non trouv�e: $chemin");
         }
 
-        // Exécuter les middlewares
-        foreach ($route->obtenirMiddlewares() as $middleware) {
-            // À implémenter selon les middlewares disponibles
-        }
+        $middlewares = $route->obtenirMiddlewares();
+        $index = 0;
 
-        // Exécuter la route
-        $this->executerRoute($route, $requete, $reponse);
+        $suivant = function (Requete $req) use (&$index, $middlewares, $route, $reponse, &$suivant): Reponse {
+            if ($index >= count($middlewares)) {
+                $this->executerRoute($route, $req, $reponse);
+                return $reponse;
+            }
+
+            $middleware = $middlewares[$index++];
+
+            if ($middleware instanceof Fermeture) {
+                $resultat = $middleware($req, $suivant);
+                return $resultat instanceof Reponse ? $resultat : $reponse;
+            }
+
+            if (is_string($middleware)) {
+                $classeMiddleware = class_exists($middleware) ? $middleware : "Core\\Middlewares\\$middleware";
+
+                if (!class_exists($classeMiddleware)) {
+                    throw new \Exception("Middleware non trouvé: $classeMiddleware");
+                }
+
+                $instance = new $classeMiddleware();
+
+                if (!method_exists($instance, 'traiter')) {
+                    throw new \Exception("Methode traiter() introuvable sur le middleware: $classeMiddleware");
+                }
+
+                $resultat = $instance->traiter($req, $suivant);
+                return $resultat instanceof Reponse ? $resultat : $reponse;
+            }
+
+            throw new \Exception('Type de middleware invalide.');
+        };
+
+        $suivant($requete);
     }
 
     /**
-     * Trouve une route correspondant à la requête
+     * Trouve une route correspondant � la requ�te
      */
     protected function trouverRoute(string $methode, string $chemin): ?Route
     {
@@ -161,13 +191,13 @@ class Routeur
     }
 
     /**
-     * Exécute une route
+     * Ex�cute une route
      */
     protected function executerRoute(Route $route, Requete $requete, Reponse $reponse): void
     {
         $action = $route->obtenirAction();
 
-        // Si c'est une string (contrôleur@méthode)
+        // Si c'est une string (contr�leur@m�thode)
         if (is_string($action)) {
             $this->executerControleur($action, $requete, $reponse, $route->obtenirParametres());
         }
@@ -178,7 +208,7 @@ class Routeur
     }
 
     /**
-     * Exécute un contrôleur
+     * Ex�cute un contr�leur
      */
     protected function executerControleur(string $action, Requete $requete, Reponse $reponse, array $parametres): void
     {
@@ -187,16 +217,16 @@ class Routeur
         $classe = "App\\Controleurs\\$controleur";
 
         if (!class_exists($classe)) {
-            throw new \Exception("Contrôleur non trouvé: $classe");
+            throw new \Exception("Contr�leur non trouv�: $classe");
         }
 
         $instance = new $classe();
 
         if (!method_exists($instance, $methode)) {
-            throw new \Exception("Méthode non trouvée: $classe@$methode");
+            throw new \Exception("M�thode non trouv�e: $classe@$methode");
         }
 
-        // Appeler la méthode avec injection des dépendances
+        // Appeler la m�thode avec injection des d�pendances
         $reflexion = new MethodeReflexion($instance, $methode);
         $params = [];
 
@@ -208,17 +238,22 @@ class Routeur
             } elseif ($type && $type->getName() === Reponse::class) {
                 $params[] = $reponse;
             } else {
-                // Essayer de récupérer le paramètre par son nom
+                // Essayer de r�cup�rer le param�tre par son nom
                 $nomParam = $param->getName();
                 $params[] = $parametres[$nomParam] ?? null;
             }
         }
 
-        call_user_func_array([$instance, $methode], $params);
+        $result = call_user_func_array([$instance, $methode], $params);
+
+        // Si le contr�leur retourne une cha�ne (ex: `return vue('...')`), l'afficher
+        if (is_string($result)) {
+            echo $result;
+        }
     }
 
     /**
-     * Obtient toutes les routes enregistrées
+     * Obtient toutes les routes enregistr�es
      */
     public static function obtenirRoutes(): array
     {
