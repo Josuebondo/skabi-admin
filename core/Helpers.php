@@ -226,6 +226,23 @@ if (!function_exists('url')) {
     }
 }
 
+if (!function_exists('asset')) {
+    /**
+     * Génère l'URL publique d'un asset (CSS/JS/images)
+     * Exemple: asset('css/app.css') => http://monsite/css/app.css
+     */
+    function asset(string $chemin = ''): string
+    {
+        $chemin = ltrim($chemin, '/');
+        $base = getenv('URL_APPLICATION') ?: '';
+        if ($base) {
+            return rtrim($base, '/public/') . '/' . $chemin;
+        }
+        // Par défaut, retourner un chemin relatif depuis la racine publique
+        return '/' . $chemin;
+    }
+}
+
 if (!function_exists('auth')) {
     /**
      * Récupère l'utilisateur connecté
@@ -363,5 +380,52 @@ if (!function_exists('validation_service')) {
             $service = new \App\Services\ValidationService();
         }
         return $service;
+    }
+}
+if (!function_exists('fichier_url')) {
+    /**
+     * Génère l'URL d'un fichier dans le dossier storage
+     */
+    function fichier_url(string $chemin_fichier): string
+    {
+        $baseUrl = env('URL_APPLICATION', 'http://localhost');
+        $chemin_fichier = ltrim($chemin_fichier, '/');
+        return rtrim($baseUrl, '/') . '/storage/' . $chemin_fichier;
+    }
+}
+
+if (!function_exists('menu_image_url')) {
+    /**
+     * Génère l'URL d'une image de menu
+     * Gère à la fois les chemins complets et les noms de fichiers simples
+     */
+    function menu_image_url(?string $image): ?string
+    {
+        if (!$image) {
+            return null;
+        }
+
+        // Utiliser StorageManager pour générer l'URL
+        return \Core\Storage\StorageManager::url($image);
+    }
+}
+
+if (!function_exists('log_app')) {
+    /**
+     * Log applicatif (info/debug)
+     */
+    function log_app(string $message, string $type = 'INFO'): void
+    {
+        \Core\GestionnaireErreurs::log($message, $type);
+    }
+}
+
+if (!function_exists('log')) {
+    /**
+     * Log applicatif (info/debug)
+     */
+    function log(string $message, string $type = 'INFO'): void
+    {
+        \Core\GestionnaireErreurs::log($message, $type);
     }
 }

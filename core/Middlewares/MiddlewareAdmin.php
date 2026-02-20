@@ -2,23 +2,21 @@
 
 namespace Core\Middlewares;
 
-use Core\Auth;
 use Core\Requete;
+use Core\Reponse;
 
 /**
- * Middleware Admin - Vérifie que l'utilisateur est administrateur
+ * MiddlewareAdmin - Vérifie que l'utilisateur est un administrateur
  */
 class MiddlewareAdmin
 {
-    /**
-     * Vérifie que l'utilisateur est admin
-     */
-    public static function verifier(Requete $requete): bool
+    public function traiter(Requete $request, callable $next): Reponse
     {
-        if (!Auth::estAdmin()) {
-            header('Location: /');
-            exit;
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            $reponse = new Reponse();
+            $reponse->redirection('/login');
+            return $reponse;
         }
-        return true;
+        return $next($request);
     }
 }

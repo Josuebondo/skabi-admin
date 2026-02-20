@@ -105,6 +105,21 @@ class GestionnaireErreurs
     }
 
     /**
+     * Log applicatif (info/debug)
+     */
+    public static function log(string $message, string $type = 'INFO'): void
+    {
+        $contenu = sprintf(
+            "[%s] [%s] %s\n",
+            date('Y-m-d H:i:s'),
+            $type,
+            $message
+        );
+        $nomFichier = self::$cheminLogs . 'app-' . date('Y-m-d') . '.log';
+        file_put_contents($nomFichier, $contenu, FILE_APPEND);
+    }
+
+    /**
      * Affiche une erreur en mode debug
      */
     private static function afficherErreur(string $message, string $fichier, int $ligne, int $niveau): void
@@ -186,7 +201,7 @@ HTML;
         <body>
             <div class="container">
                 <div class="header">
-                    <div class="type">❌ {$exception->getClass()}</div>
+                    <div class="type">❌ " . get_class($exception) . "</div>
                     <div class="message">{$exception->getMessage()}</div>
                 </div>
                 <div class="trace">
