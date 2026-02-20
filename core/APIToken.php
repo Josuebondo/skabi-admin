@@ -35,25 +35,6 @@ class APIToken
 
         return "{$header}.{$payload}.{$signature}";
     }
-    /**
-     * Générer un refresh token
-     */
-    public function genererRefreshToken(array $donnees): string
-    {
-        $expirationBackup = $this->expiration;
-
-        // 7 jours
-        $this->expiration = 60 * 60 * 24 * 7;
-
-        $token = $this->generer([
-            ...$donnees,
-            'type' => 'refresh'
-        ]);
-
-        $this->expiration = $expirationBackup;
-
-        return $token;
-    }
 
     /**
      * Vérifier un token

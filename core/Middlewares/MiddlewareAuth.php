@@ -2,31 +2,22 @@
 
 namespace Core\Middlewares;
 
-use Core\Auth;
 use Core\Requete;
+use Core\Reponse;
 
 /**
- * Middleware d'authentification - Vérifie que l'utilisateur est connecté
+ * Middleware d'authentification - V�rifie que l'utilisateur est connect�
  */
 class MiddlewareAuth
 {
-    /**
-     * Vérifie que l'utilisateur est connecté
-     */
-    public static function verifier(Requete $requete): bool
+    public function traiter(Requete $request, callable $next): Reponse
     {
-        if (!Auth::connecte()) {
-
-            if ($requete->estAjax() || $requete->estApi()) {
-                http_response_code(401);
-                echo json_encode(['error' => 'Non authentifié']);
-                exit;
-            }
-
-            header('Location: /connexion');
-            exit;
+        if (!isset($_SESSION['user'])) {
+            $reponse = new Reponse();
+            $reponse->redirection('/login');
+            return $reponse;
         }
 
-        return true;
+        return $next($request);
     }
 }

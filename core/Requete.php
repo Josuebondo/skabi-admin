@@ -126,25 +126,6 @@ class Requete
     }
 
     /**
-     * Vérifie si c'est une requête API (header Authorization Bearer présent)
-     */
-    public function estApi(): bool
-    {
-        $header = $this->entete('Authorization');
-        return !empty($header) && preg_match('/Bearer\s+.+/i', $header);
-    }
-
-    /**
-     * Obtient un en-tête HTTP
-     */
-    public function entete(string $nom): ?string
-    {
-        // Convertir le nom en format HTTP (ex: authorization -> HTTP_AUTHORIZATION)
-        $cle = 'HTTP_' . strtoupper(str_replace('-', '_', $nom));
-        return $this->server[$cle] ?? null;
-    }
-
-    /**
      * Obtient une valeur GET ou POST
      */
     public function input(string $cle, mixed $default = null): mixed
@@ -158,5 +139,60 @@ class Requete
     public function a(string $cle): bool
     {
         return isset($this->post[$cle]) || isset($this->get[$cle]);
+    }
+
+    /**
+     * Retourne toutes les données du corps de la requête (POST, PUT, PATCH, DELETE)
+     * - Pour POST : $_POST
+     * - Pour PUT/PATCH/DELETE : JSON ou x-www-form-urlencoded
+     */
+    public function tous(): array
+    {
+        $methode = $this->methode();
+        if ($methode === 'POST') {
+            return $this->post;
+        }
+        // Pour PUT, PATCH, DELETE : lire le corps brut
+        if (in_array($methode, ['PUT', 'PATCH', 'DELETE'])) {
+            $contenu = file_get_contents('php://input');
+            $data = [];
+            $contentType = $this->server['CONTENT_TYPE'] ?? '';
+            if (stripos($contentType, 'application/json') !== false) {
+                $data = json_decode($contenu, true) ?: [];
+            } elseif (stripos($contentType, 'application/x-www-form-urlencoded') !== false) {
+                parse_str($contenu, $data);
+            }
+            return $data;
+        }
+        // Pour GET ou autres, rien
+        return [];
+    }
+
+    /**
+     * Retourne toutes les données GET + POST (formulaire classique)
+     */
+    public function tousFormulaires(): array
+    {
+        return array_merge($this->get, $this->post);
+    }
+
+    /**
+     * Retourne toutes les données du corps pour PUT/PATCH/DELETE (JSON ou x-www-form-urlencoded)
+     */
+    public function tousCorps(): array
+    {
+        $methode = $this->methode();
+        if (in_array($methode, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+            $contenu = file_get_contents('php://input');
+            $data = [];
+            $contentType = $this->server['CONTENT_TYPE'] ?? '';
+            if (stripos($contentType, 'application/json') !== false) {
+                $data = json_decode($contenu, true) ?: [];
+            } elseif (stripos($contentType, 'application/x-www-form-urlencoded') !== false) {
+                parse_str($contenu, $data);
+            }
+            return $data;
+        }
+        return [];
     }
 }
