@@ -50,6 +50,20 @@ class AuthControleur extends BaseControleur
         curl_close($ch);
 
         header('Content-Type: application/json');
+        if ($apiResponse === false) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Erreur de connexion à l'API"
+            ]);
+            return;
+        }
+        if ($httpCode === 401) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Identifiants incorrects"
+            ]);
+            return;
+        }
 
         if ($httpCode !== 200) {
             echo json_encode([
