@@ -429,3 +429,12 @@ if (!function_exists('log')) {
         \Core\GestionnaireErreurs::log($message, $type);
     }
 }
+if (!function_exists('q')) {
+    /**
+     * Log applicatif (info/debug)
+     */
+    function q(): void
+    {
+        exit();
+    }
+}

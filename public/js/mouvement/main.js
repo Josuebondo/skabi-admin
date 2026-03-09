@@ -5,6 +5,9 @@ const api = new ApiService("https://stock.skabi.shop/");
 
 let mouvements = []; // Données complètes
 let filteredMouvements = []; // Données filtrées
+let bons = [];
+let filteredBons = [];
+
 let currentPage = 1;
 const pageSize = 20; // Nombre de lignes par page
 function showToast(message, type = "info") {
@@ -53,7 +56,23 @@ function showToast(message, type = "info") {
 // 🔹 Fetch initial et stockage local
 async function initData() {
   mouvements = JSON.parse(localStorage.getItem("mouvements") || "[]");
+  bons = JSON.parse(localStorage.getItem("bons") || "[]");
+  if (bons.length === 0) {
+    console.log("Récupération des données depuis l'API...");
+    const response = await api.postData(
+      "mouvement/getBonsAdminApi",
+      { "X-API-KEY": "ADMIN_SECRET_2026" },
+      {}, // fetch initial sans filtre
+    );
 
+    if (response && response.status === "success") {
+      bons = response.data;
+      localStorage.setItem("bons", JSON.stringify(bons));
+    } else {
+      console.error("Erreur fetch initial :", response);
+      return;
+    }
+  }
   if (mouvements.length === 0) {
     console.log("Récupération des données depuis l'API...");
     const response = await api.postData(
@@ -73,7 +92,11 @@ async function initData() {
 
   // Par défaut, toutes les données
   filteredMouvements = [...mouvements];
+  filteredBons = [...bons];
   renderPage(1);
+  renderBons(1);
+  console.log("Mouvements chargés :", mouvements, "bons chargés :", bons);
+  // console.log(bons);
 }
 
 // 🔹 Filtrage instantané
@@ -101,10 +124,11 @@ function filterMouvements(filters = {}) {
     return true;
   });
 
-  console.log("Mouvements après filtrage :", filteredMouvements);
+  // console.log("Mouvements après filtrage :", filteredMouvements);
   // Reset pagination
   currentPage = 1;
   renderPage(currentPage);
+  renderBons(currentPage);
 }
 
 // 🔹 Tri dynamique
@@ -252,6 +276,179 @@ function renderPage(page) {
 
   // Ici tu peux mettre le code pour afficher les données dans ton tableau HTML
 }
+
+function renderBons(page) {
+  currentPage = page;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const pageData = filteredBons.slice(start, end);
+  const div = document.getElementById("documents-list");
+  div.innerHTML = "";
+
+  if (filteredBons.length === 0) {
+    div.innerHTML =
+      '<div class="col-span-full text-center text-slate-500 py-10">Aucun bon trouvé pour ces critères.</div>';
+    return;
+  }
+
+  pageData.forEach((b) => {
+    const item = document.createElement("div");
+
+    // === Création bouton correctement ===
+    const showbtn = document.createElement("button");
+    showbtn.className =
+      "text-[10px] font-bold text-primary hover:underline flex items-center gap-1";
+    showbtn.innerHTML = `
+      VOIR DÉTAILS 
+      <span class="material-icons text-xs">open_in_new</span>
+    `;
+
+    showbtn.addEventListener("click", () => {
+      ShowbonDetails(b);
+      // console.log("Détails du bon affichés pour :", b);²
+    });
+
+    let source = "";
+    let destination = "";
+
+    if (b.type === "entrée") {
+      source = b.client || "Fournisseur";
+      destination = b.entrepot?.nom || "Stock";
+    } else if (b.type === "sortie") {
+      source = b.entrepot?.nom || "Stock";
+      destination = b.client || "Client";
+    } else if (b.type === "transfert") {
+      source = b.entrepot?.nom || "Stock";
+      destination = b.destination?.nom || "Stock";
+    }
+    const statuscontainer = document.createElement("p");
+    // ⚡ Mise à jour du statut
+    if (b.statut === "validé") {
+      statuscontainer.innerHTML = `
+                                 <span class="text-xs font-bold text-accent-emerald"> Validé</span>`;
+    } else if (b.statut === "en_attente") {
+      statuscontainer.innerHTML = `
+                                 <span class="text-xs font-bold text-slate-500"> En attente</span>`;
+    } else if (b.statut === "annulé") {
+      statuscontainer.innerHTML = `
+                                 <span class="text-xs font-bold text-accent-coral"> Annulé</span>`;
+    }
+
+    item.innerHTML = `
+      <div class="bg-dark-surface max-h-[150px] border border-dark-border rounded-xl p-4 hover:border-slate-500 transition-all">
+        <div class="flex items-center justify-between border-b border-dark-border pb-3 mb-3">
+         <div class="flex flex-col">
+          <h4 class="text-sm font-bold text-white">Document ${b.document}</h4>
+          <h4 class="text-sm font-madium text-slate-400">Date: ${b.created_at}</h4>
+         </div>
+         <div class="flex flex-col">
+       
+         <span class="text-xs text-slate-400">${b.mouvements.length} Articles</span>
+         ${statuscontainer.outerHTML}
+         </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4">
+          <div class="text-[10px]">
+            <span class="text-slate-500 block">Origine</span>
+            <span class="text-slate-200  truncate max-w-[30px] font-bold">${source}</span>
+          </div>
+          <div class="text-[10px]">
+            <span class="text-slate-500 block">Destination</span>
+            <span class="text-slate-200  truncate max-w-[30px] font-bold">${destination}</span>
+          </div>
+          <div class="text-[10px]">
+            <span class="text-slate-500 block">Crée par</span>
+            <span class="text-slate-200  truncate max-w-[50px] font-bold">${b.createur || "-"}</span>
+          </div>
+          <div class="flex justify-end" id="btn-container"></div>
+        </div>
+      </div>
+    `;
+
+    // Ajouter bouton au bon endroit
+    item.querySelector("#btn-container").appendChild(showbtn);
+
+    div.appendChild(item);
+    createBPagination();
+  });
+}
+
+function ShowbonDetails(b) {
+  const detailsSection = el("section-document-details");
+  const documentsSection = el("section-documents");
+  const statuscontainer = el("b-status-contaner");
+  const itemsContainer = el("b-items");
+
+  // ⚡ Mise à jour du statut
+  if (b.statut === "validé") {
+    statuscontainer.innerHTML = `<span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
+                                 <span class="text-xs font-bold text-accent-emerald"> Validé</span>`;
+  } else if (b.statut === "en_attente") {
+    statuscontainer.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                                 <span class="text-xs font-bold text-slate-500"> En attente</span>`;
+  } else if (b.statut === "annulé") {
+    statuscontainer.innerHTML = `<span class="w-2 h-2 rounded-full bg-accent-coral"></span>
+                                 <span class="text-xs font-bold text-accent-coral"> Annulé</span>`;
+  }
+
+  // ⚡ Détermination source et destination
+  let source, destination;
+  if (b.type === "entrée") {
+    source = b.client || "Fournisseur";
+    destination = b.entrepot?.nom || "Stock";
+  } else if (b.type === "sortie") {
+    source = b.entrepot?.nom || "Stock";
+    destination = b.client || "Client";
+  } else if (b.type === "transfert") {
+    source = b.entrepot?.nom || "Stock";
+    destination = b.destination?.nom || "Stock";
+  } else {
+    source = b.entrepot?.nom || "Stock";
+    destination = b.destination?.nom || "Stock";
+  }
+
+  // ⚡ Remplir les infos générales
+  el("bon-doc").textContent = b.document;
+  el("bon-type").textContent = b.type;
+  el("bon-id").textContent = b.id;
+  el("bon-createur").textContent = b.createur || "Inconnu";
+  el("bon-date").textContent = b.created_at || "Inconnu";
+  el("bon-qty").textContent = b.mouvements.length || "0";
+  el("bon-source").textContent = source || "Inconnu";
+  el("bon-destination").textContent = destination || "Inconnu";
+  el("b-validateur").innerText = b.validateur || "Inconnu";
+  el("b-v-date").innerText = b.validated_at || "Inconnu";
+
+  // ⚡ Générer dynamiquement la liste des articles
+  itemsContainer.innerHTML = ""; // Vider l'ancien contenu
+  b.mouvements.map((m) => {
+    let qty = m.quantite;
+    let colorClass = "text-slate-300"; // neutre par défaut
+
+    if (b.type === "sortie") {
+      qty = -Math.abs(qty); // négatif pour sortie
+      colorClass = "text-accent-coral font-black";
+    } else if (b.type === "entrée") {
+      qty = Math.abs(qty); // positif pour entrée
+      colorClass = "text-accent-emerald font-black";
+    } else if (b.type === "transfert") {
+      colorClass = "text-slate-500 font-black"; // neutre
+    }
+
+    const div = document.createElement("div");
+    div.className = "flex items-center justify-between text-xs";
+    div.innerHTML = `
+      <span class="text-slate-300 font-semibold">${m.article_id}-${m.article_nom}</span>
+      <span class="${colorClass}">${qty}</span>
+    `;
+    itemsContainer.appendChild(div);
+  });
+
+  // ⚡ Masquer la liste des documents et afficher la section détail
+  documentsSection.classList.add("hidden");
+  detailsSection.classList.remove("hidden");
+}
 function getmovement(id) {
   return mouvements.find((m) => m.id == id);
 }
@@ -345,6 +542,11 @@ let btnPrev = document.getElementById("prev");
 btnNext.addEventListener("click", nextPage);
 btnPrev.addEventListener("click", prevPage);
 
+let bbtnNext = document.getElementById("bnext");
+let bbtnPrev = document.getElementById("bprev");
+bbtnNext.addEventListener("click", bnextPage);
+bbtnPrev.addEventListener("click", bprevPage);
+
 function createPagination() {
   const paginationDiv = document.getElementById("pagination");
   paginationDiv.innerHTML = "";
@@ -372,13 +574,50 @@ function createPagination() {
     paginationDiv.appendChild(btn);
   }
 }
+function createBPagination() {
+  const paginationDiv = document.getElementById("bpagination");
+  paginationDiv.innerHTML = "";
+
+  const totalPages = Math.ceil(filteredBons.length / pageSize);
+  const maxVisible = 5;
+
+  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let end = start + maxVisible - 1;
+
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(1, end - maxVisible + 1);
+  }
+
+  for (let i = start; i <= end; i++) {
+    const btn = document.createElement("button");
+    btn.className = `w-8 h-8 flex items-center justify-center rounded-lg text-[10px] font-bold ${
+      i === currentPage
+        ? "bg-primary text-white"
+        : "border border-slate-700 hover:bg-slate-800 text-slate-500"
+    }`;
+    btn.innerText = i;
+    btn.addEventListener("click", () => renderBons(i));
+    paginationDiv.appendChild(btn);
+  }
+}
 
 function nextPage() {
   if (currentPage * pageSize < filteredMouvements.length) {
     renderPage(currentPage + 1);
   }
 }
+function bnextPage() {
+  if (currentPage * pageSize < filteredBons.length) {
+    renderBons(currentPage + 1);
+  }
+}
 
+function bprevPage() {
+  if (currentPage > 1) {
+    renderBons(currentPage - 1);
+  }
+}
 function prevPage() {
   if (currentPage > 1) {
     renderPage(currentPage - 1);
@@ -392,6 +631,7 @@ el("dateActualisation").innerText = dateActualisation.toLocaleTimeString();
 // 🔹 Rafraîchir les données depuis l'API
 async function refreshData() {
   localStorage.removeItem("mouvements");
+  localStorage.removeItem("bons");
   localStorage.setItem("dateActualisation", new Date().toISOString());
 
   el("dateActualisation").textContent = dateActualisation.toLocaleTimeString();
@@ -525,17 +765,63 @@ async function deleteMouvement(id) {
     el("d-btntxt").textContent = " SUPPRIMER";
   }
 }
-console.log("sesssion", sessionStorage);
-console.log(
-  "curentUser:",
-  JSON.parse(sessionStorage.getItem("currentUser")).user_id,
-);
+async function deleteBon(id) {
+  // if (!confirm("Êtes-vous sûr de vouloir supprimer ce mouvement ?")) return;
+
+  el("b-delete-btn").disabled = true;
+  el("b-d-btn-icon").textContent = "autorenew";
+  el("b-d-btn-icon").classList.add("spin");
+  el("b-d-btntxt").textContent = "Supression...";
+  // let userid = JSON.parse(localStorage.getItem("currentUser")).user_id;
+  try {
+    const response = await api.postData(
+      "mouvement/apideleteBon",
+      { "X-API-KEY": "ADMIN_SECRET_2026" },
+      { id: id },
+    );
+    // const data = await response.text();
+    console.log("response avnt:", response);
+
+    if (response && response.success === true) {
+      el("b-d-btntxt").textContent = "Actualisation...";
+      await refreshData();
+      await new Promise((r) => setTimeout(r, 500));
+
+      el("b-delete-btn").disabled = false;
+      el("b-d-btn-icon").textContent = "delete";
+      el("b-d-btn-icon").classList.remove("spin");
+      el("b-d-btntxt").textContent = " SUPPRIMER";
+      el("section-document-details").classList.add("hidden");
+      el("section-documents").classList.remove("hidden");
+      showToast("Mouvement supprimé avec succès !", "success");
+    } else {
+      el("b-delete-btn").disabled = false;
+      el("b-d-btn-icon").textContent = "delete";
+      el("b-d-btn-icon").classList.remove("spin");
+      el("b-d-btntxt").textContent = " SUPPRIMER";
+      showToast(response.message || "Erreur lors de la supression", "error");
+    }
+  } catch (error) {
+    console.error("Erreur lors de la validation du mouvement :", error);
+    showToast("Une erreur est survenue lors de la validation.", "error");
+    el("b-delete-btn").disabled = false;
+    el("b-d-btn-icon").textContent = "delete";
+    el("b-d-btn-icon").classList.remove("spin");
+    el("b-d-btntxt").textContent = " SUPPRIMER";
+  }
+}
+
+// console.log("sesssion", sessionStorage);
+// console.log(
+//   "curentUser:",
+//   JSON.parse(sessionStorage.getItem("currentUser")).user_id,
+// );
 
 async function validateMouvement(id) {
-  el("validate-btn").disabled = true;
-  el("v-btn-icon").textContent = "autorenew";
-  el("v-btn-icon").classList.add("spin");
-  el("v-btntxt").textContent = "Validation...";
+  el("b-validate-btn").disabled = true;
+  el("b-btn-icon").textContent = "autorenew";
+  el("b-btn-icon").classList.add("spin");
+  el("b-btntxt").textContent = "Validation...";
   let userid = JSON.parse(sessionStorage.getItem("currentUser")).user_id;
 
   try {
@@ -548,7 +834,7 @@ async function validateMouvement(id) {
     // console.log("response avnt:", response);
 
     if (response && response.success === true) {
-      el("v-btntxt").textContent = "Actualisation...";
+      el("b-btntxt").textContent = "Actualisation...";
       await refreshData();
       await new Promise((r) => setTimeout(r, 500));
       let mvn = getmovement(id);
@@ -576,6 +862,50 @@ async function validateMouvement(id) {
     el("v-btntxt").textContent = " VALIDER";
   }
 }
+async function validateBons(id) {
+  el("b-validate-btn").disabled = true;
+  el("b--v-btn-icon").textContent = "autorenew";
+  el("b--v-btn-icon").classList.add("spin");
+  el("b-btntxt").textContent = "Validation...";
+  let userid = JSON.parse(sessionStorage.getItem("currentUser")).user_id;
+
+  try {
+    const response = await api.postData(
+      "mouvement/apivalidateBon",
+      { "X-API-KEY": "ADMIN_SECRET_2026" },
+      { id: id, user_id: userid },
+    );
+    // const data = await response.text();
+    console.log("response avnt:", response);
+
+    if (response && response.success === true) {
+      el("b-btntxt").textContent = "Actualisation...";
+      await refreshData();
+      await new Promise((r) => setTimeout(r, 500));
+
+      // showtoast("Mouvement validé avec succès !", "success");
+      // alert("Mouvement validé avec succès !");
+      // console.log("rep apres", response);
+      el("b-validate-btn").disabled = false;
+      el("b--v-btn-icon").textContent = "check";
+      el("b--v-btn-icon").classList.remove("spin");
+      el("b-btntxt").textContent = " VALIDER";
+    } else {
+      el("b-validate-btn").disabled = false;
+      el("b--v-btn-icon").textContent = "check";
+      el("b--v-btn-icon").classList.remove("spin");
+      el("b-btntxt").textContent = " VALIDER";
+      showtoast(response.message || "Erreur lors de la validation", "error");
+    }
+  } catch (error) {
+    console.error("Erreur lors de la validation du mouvement :", error);
+    showtoast("Une erreur est survenue lors de la validation.", "error");
+    el("b-validate-btn").disabled = false;
+    el("b--v-btn-icon").textContent = "check";
+    el("b--v-btn-icon").classList.remove("spin");
+    el("b-btntxt").textContent = " VALIDER";
+  }
+}
 
 document.getElementById("delete-btn").addEventListener("click", () => {
   const id = document.getElementById("mvn-id").textContent;
@@ -585,6 +915,14 @@ document.getElementById("delete-btn").addEventListener("click", () => {
 document.getElementById("validate-btn").addEventListener("click", () => {
   const id = document.getElementById("mvn-id").textContent;
   validateMouvement(id);
+});
+document.getElementById("b-validate-btn").addEventListener("click", () => {
+  const id = document.getElementById("bon-id").textContent;
+  validateBons(id);
+});
+document.getElementById("b-delete-btn").addEventListener("click", () => {
+  const id = document.getElementById("bon-id").textContent;
+  deleteBon(id);
 });
 
 // filtre avancé
@@ -638,6 +976,7 @@ document.getElementById("reset-filters").addEventListener("click", () => {
 });
 
 const searchInput = el("search-input");
+const BsearchInput = el("Bsearch-input");
 
 searchInput.addEventListener("input", function () {
   const value = this.value.toLowerCase().trim();
@@ -655,4 +994,23 @@ searchInput.addEventListener("input", function () {
 
   currentPage = 1;
   renderPage(currentPage);
+});
+
+BsearchInput.addEventListener("input", function () {
+  const value = this.value.toLowerCase().trim();
+
+  filteredBons = bons.filter((b) => {
+    // console.log(b);
+    return (
+      b.mouvements.article_nom?.toLowerCase().includes(value) ||
+      String(b.mouvements.article_id).toLowerCase().includes(value) ||
+      b.document?.toLowerCase().includes(value) ||
+      b.createur?.toLowerCase().includes(value) ||
+      b.type?.toLowerCase().includes(value) ||
+      String(b.total)?.includes(value)
+    );
+  });
+
+  currentPage = 1;
+  renderBons(currentPage);
 });

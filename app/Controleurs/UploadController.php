@@ -2,7 +2,7 @@
 
 namespace Core;
 
-use Core\BaseControleur;
+use App\BaseControleur;
 use Core\Requete;
 
 class UploadController extends BaseControleur

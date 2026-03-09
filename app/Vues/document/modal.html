@@ -1,0 +1,367 @@
+<!doctype html>
+<html class="dark" lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Création Document - Modal de Configuration</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#135bec",
+              "emerald-accent": "#10b981",
+              "background-light": "#f6f6f8",
+              "background-dark": "#0b0e14",
+              "surface-dark": "#161b26",
+              "border-dark": "#282e39",
+            },
+            fontFamily: {
+              display: ["Manrope"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Manrope", sans-serif;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #282e39;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #135bec;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-dark text-slate-100 antialiased h-screen flex flex-col overflow-hidden relative"
+  >
+    <div
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background-dark/80 backdrop-blur-sm"
+    >
+      <div
+        class="w-full max-w-lg bg-surface-dark border border-border-dark rounded-2xl shadow-2xl overflow-hidden"
+      >
+        <div class="p-8 border-b border-border-dark flex items-center gap-4">
+          <div
+            class="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30"
+          >
+            <span class="material-symbols-outlined text-primary text-3xl"
+              >note_add</span
+            >
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold text-white">Nouveau Document</h2>
+            <p class="text-sm text-slate-400">
+              Configurez les paramètres initiaux
+            </p>
+          </div>
+        </div>
+        <div class="p-8 space-y-6">
+          <div class="space-y-2">
+            <label
+              class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+              >Type de Document</label
+            >
+            <div class="relative group">
+              <span
+                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none"
+                >description</span
+              >
+              <select
+                class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+              >
+                <option value="">Sélectionner un type...</option>
+                <option value="transfert">Transfert Inter-Stock</option>
+                <option value="reception">Réception Fournisseur</option>
+                <option value="expedition">Expédition Client</option>
+                <option value="inventaire">Ajustement Inventaire</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label
+              class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+              >Date d'activation</label
+            >
+            <div class="relative group">
+              <span
+                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none"
+                >calendar_today</span
+              >
+              <input
+                class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                type="date"
+                value="2023-10-27"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label
+                class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+                >Source (Origine)</label
+              >
+              <div class="relative group">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none"
+                  >warehouse</span
+                >
+                <select
+                  class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+                >
+                  <option value="">Choisir...</option>
+                  <option value="lyon">Entrepôt Lyon</option>
+                  <option value="paris">Entrepôt Paris</option>
+                  <option value="marseille">Magasin Marseille</option>
+                </select>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label
+                class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+                >Destination (Cible)</label
+              >
+              <div class="relative group">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none"
+                  >location_on</span
+                >
+                <select
+                  class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer"
+                >
+                  <option value="">Choisir...</option>
+                  <option value="paris">Entrepôt Paris</option>
+                  <option value="lyon">Entrepôt Lyon</option>
+                  <option value="lille">Boutique Lille</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="p-8 bg-background-dark/30 border-t border-border-dark flex gap-4"
+        >
+          <button
+            class="flex-1 h-12 bg-emerald-accent hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <span class="material-symbols-outlined">play_arrow</span>
+            Commencer la saisie
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex flex-col h-full filter blur-[2px] opacity-40 pointer-events-none"
+    >
+      <header
+        class="h-16 shrink-0 flex items-center justify-between border-b border-border-dark px-6 bg-surface-dark/50 backdrop-blur-md z-30"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary"
+          >
+            <span class="material-symbols-outlined text-white"
+              >inventory_2</span
+            >
+          </div>
+          <div>
+            <h1
+              class="text-sm font-bold uppercase tracking-wider text-primary leading-none mb-1"
+            >
+              Stock Manager
+            </h1>
+            <p class="text-xs text-slate-400 leading-none">
+              Gestion de Stock v2.1
+            </p>
+          </div>
+        </div>
+        <div class="flex-1 max-w-2xl px-8">
+          <div class="relative group">
+            <span
+              class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary"
+              >search</span
+            >
+            <input
+              class="w-full h-11 bg-background-dark/80 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-slate-600"
+              placeholder="Rechercher un article par code ou désignation..."
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
+          >
+            <span class="material-symbols-outlined text-[20px]"
+              >check_circle</span
+            >
+            Valider le Document
+          </button>
+          <div
+            class="h-10 w-10 rounded-full border-2 border-primary/30"
+            style="
+              background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDAjGVrHYkgHlIQd7t_5I-m8MCZ6QHyDhOmfQDkaRkwjxsdDznO5_Z1yUlFH5TINPee0vg7PxRXYHUtbBWeWsgF9RJ_Vl8lsbrUnQC_NRADQ6Ri8t60KQ1YON_YvuuGAp6g0GFGyBF9zbfPc4zNtQ8BHSU-v2ddKZnjP7NvVIXDYBs4Mb1v4Rx4N2C17wKUWCLPsxodS3CkjLWGT8EV0M1oNR3p2JXHzIbKuQ1km5D4o-YsUeuHK3y-FsW3HafD0SWA8-oOkwS4Ohc&quot;);
+              background-size: cover;
+            "
+          ></div>
+        </div>
+      </header>
+      <div class="flex flex-1 overflow-hidden">
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-6">
+          <div
+            class="bg-surface-dark border border-border-dark rounded-xl shadow-xl flex flex-col min-h-full"
+          >
+            <div
+              class="p-4 border-b border-border-dark flex items-center justify-between"
+            >
+              <div>
+                <h2 class="text-lg font-bold">Articles du Document</h2>
+                <p class="text-xs text-slate-500">
+                  Saisie des quantités et valorisation unitaire
+                </p>
+              </div>
+            </div>
+            <div class="flex-1 overflow-x-auto">
+              <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead
+                  class="bg-background-dark/50 text-[11px] font-bold uppercase text-slate-500 border-b border-border-dark sticky top-0 z-10"
+                >
+                  <tr>
+                    <th class="px-6 py-4">Article</th>
+                    <th class="px-6 py-4">Code</th>
+                    <th class="px-6 py-4 text-center">Quantité</th>
+                    <th class="px-6 py-4 text-right">Prix Unit. (€)</th>
+                    <th class="px-6 py-4 text-right">Total HT (€)</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border-dark/40">
+                  <tr class="hover:bg-primary/5 transition-colors group">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="h-8 w-8 rounded bg-background-dark flex items-center justify-center"
+                        >
+                          <span
+                            class="material-symbols-outlined text-sm text-slate-400"
+                            >router</span
+                          >
+                        </div>
+                        <span class="text-sm font-medium"
+                          >Routeur Industriel Pro</span
+                        >
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-xs font-mono text-primary">
+                      NET-WIFI-6
+                    </td>
+                    <td class="px-6 py-4 text-center">2</td>
+                    <td class="px-6 py-4 text-right text-sm font-medium">
+                      145,50
+                    </td>
+                    <td
+                      class="px-6 py-4 text-right text-sm font-bold text-slate-100"
+                    >
+                      291,00
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <button
+                        class="text-slate-500 hover:text-red-500 transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-lg"
+                          >delete</span
+                        >
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+        <aside
+          class="w-80 border-l border-border-dark bg-surface-dark/40 flex flex-col shrink-0"
+        >
+          <div class="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
+            <div class="space-y-4">
+              <h3
+                class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+              >
+                Informations Générales
+              </h3>
+              <div class="space-y-3">
+                <div
+                  class="p-3 bg-background-dark/50 rounded-lg border border-border-dark"
+                >
+                  <label class="text-[10px] text-slate-500 uppercase font-bold"
+                    >Type de Document</label
+                  >
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="material-symbols-outlined text-primary text-lg"
+                      >move_item</span
+                    >
+                    <span class="text-sm font-bold">---</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <h3
+                class="text-[10px] font-black uppercase tracking-widest text-slate-500"
+              >
+                Résumé Document
+              </h3>
+              <div class="space-y-3 px-1">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-slate-400">Total Articles</span>
+                  <span class="font-bold">0 unités</span>
+                </div>
+                <div
+                  class="flex justify-between items-center pt-3 border-t border-border-dark/30"
+                >
+                  <span class="text-primary font-bold text-sm uppercase"
+                    >Valeur Totale</span
+                  >
+                  <span class="text-lg font-black text-white">0,00 €</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+    <div
+      class="fixed inset-0 -z-10 opacity-20 pointer-events-none"
+      style="
+        background-image: radial-gradient(#135bec 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+      "
+    ></div>
+  </body>
+</html>
