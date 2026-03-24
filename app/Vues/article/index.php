@@ -102,7 +102,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-6 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
                 <div class="md:col-span-6 relative">
                     <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-                    <input class="w-full pl-8 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded text-xs focus:ring-primary h-9" placeholder="Code ou nom d'article..." type="text" />
+                    <input id="search-input" class="w-full pl-8 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded text-xs focus:ring-primary h-9" placeholder="Code ou nom d'article..." type="text" />
                 </div>
                 <div class="md:col-span-3">
                     <select class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded text-xs focus:ring-primary h-9">

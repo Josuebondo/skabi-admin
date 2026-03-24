@@ -520,7 +520,7 @@
             });
         });*/
     </script>
-    <script src="/js/admin/document.js"></script>
+    <script src="<?= URLROOT ?>/js/admin/document.js"></script>
 </body>
 
 </html>

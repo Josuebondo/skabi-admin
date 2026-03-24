@@ -48,7 +48,7 @@
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
     <div class="flex min-h-screen">
-        <aside class="w-64 bg-white dark:bg-surface-dark border-r border-slate-200 dark:border-border-dark flex flex-col fixed h-full z-20">
+        <aside class="w-64 bg-white dark:bg-surface-dark border-r border-slate-200 dark:border-border-dark hidden flex flex-col fixed h-full z-20">
             <div class="p-6 flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
                     <span class="material-symbols-outlined">storefront</span>
@@ -93,7 +93,7 @@
                 </div>
             </div>
         </aside>
-        <main class="flex-1 ml-64 p-8">
+        <main class="flex-1  p-8">
             <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
                     <h2 class="text-3xl font-extrabold tracking-tight">Tableau de Bord Financier</h2>

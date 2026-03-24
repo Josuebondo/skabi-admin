@@ -47,6 +47,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderPage(currentPage);
   }
+  function el(id) {
+    return document.getElementById(id);
+  }
+  const searchInput = el("search-input");
+
+  searchInput.addEventListener("input", function () {
+    const value = this.value.toLowerCase().trim();
+
+    articles = articles.filter((a) => {
+      return (
+        a.nom?.toLowerCase().includes(value) ||
+        String(a.id).toLowerCase().includes(value)
+      );
+    });
+
+    currentPage = 1;
+    renderPage(currentPage);
+  });
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key == "enter") {
+      const value = this.value.toLowerCase().trim();
+      if (value == null) {
+        articles = data.data;
+        currentPage = 1;
+        renderPage(currentPage);
+        return;
+      }
+      articles = articles.filter((a) => {
+        return (
+          a.nom?.toLowerCase().includes(value) ||
+          String(a.id).toLowerCase().includes(value)
+        );
+      });
+      console.log(articles);
+      currentPage = 1;
+      renderPage(currentPage);
+    }
+  });
 
   function renderPage(page) {
     const container = document.getElementById("grid-container");

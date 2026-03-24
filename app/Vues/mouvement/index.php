@@ -708,9 +708,9 @@
             </div>
         </main>
     </div>
-    <script src="public/js/mouvement/sections-toggle.js"></script>
-    <script src="public/js/mouvement/Auth.js"></script>
-    <script type="module" src="public/js/mouvement/main.js"></script>
+    <script src="js/mouvement/sections-toggle.js"></script>
+    <script src="js/mouvement/Auth.js"></script>
+    <script type="module" src="js/mouvement/main.js"></script>
 
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
 </body>

@@ -39,9 +39,6 @@
             },
         }
     </script>
-    <script>
-        const URLROOT = "<?= URLROOT ?>";
-    </script>
 
     <style>
         .material-symbols-outlined {
@@ -169,7 +166,7 @@
                     <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-primary dark:group-hover:text-primary-400 transition-colors">home</span>
                     Accueil
                 </a>
-                <a class="flex items-center gap-3 px-3 py-2 text-sm font-medium bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 rounded-lg group transition-colors" href="<?= URLROOT ?>/document">
+                <a class="flex items-center gap-3 px-3 py-2 text-sm font-medium bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 rounded-lg group transition-colors" href="/document">
                     <span class="material-symbols-outlined text-[20px] icon-filled">folder</span>
                     Mes Fichiers
                 </a>
@@ -185,7 +182,7 @@
                     <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-primary dark:group-hover:text-primary-400 transition-colors">star</span>
                     Favoris
                 </a>
-                <a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-lg group transition-colors" href="<?= URLROOT ?>/trush">
+                <a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white rounded-lg group transition-colors" href="/trush">
                     <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-red-500 transition-colors">delete</span>
                     Corbeille
                 </a>

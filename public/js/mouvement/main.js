@@ -53,8 +53,43 @@ function showToast(message, type = "info") {
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
+
+function showLoading() {
+  const container = document.getElementById("movement-grid");
+  container.innerHTML = "";
+
+  for (let i = 0; i < 8; i++) {
+    container.innerHTML += `
+      <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 animate-pulse">
+        
+        <div class="flex flex-col gap-2">
+          <div class="h-2 w-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          <div class="h-3 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+        </div>
+
+        <div class="flex flex-col gap-2 py-2 border-y border-slate-400 dark:border-slate-800/50">
+          <div class="flex justify-between">
+            <div class="h-2 w-12 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            <div class="h-2 w-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          </div>
+          <div class="flex justify-between">
+            <div class="h-2 w-12 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            <div class="h-2 w-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <div class="h-3 w-16 bg-slate-400 dark:bg-slate-700 rounded"></div>
+          <div class="h-5 w-5 bg-slate-400 dark:bg-slate-700 rounded"></div>
+        </div>
+
+      </div>
+    `;
+  }
+}
 // 🔹 Fetch initial et stockage local
 async function initData() {
+  showLoading();
   mouvements = JSON.parse(localStorage.getItem("mouvements") || "[]");
   bons = JSON.parse(localStorage.getItem("bons") || "[]");
   if (bons.length === 0) {
@@ -290,7 +325,7 @@ function renderBons(page) {
       '<div class="col-span-full text-center text-slate-500 py-10">Aucun bon trouvé pour ces critères.</div>';
     return;
   }
-
+  console.log(pageData);
   pageData.forEach((b) => {
     const item = document.createElement("div");
 

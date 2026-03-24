@@ -1,3 +1,8 @@
+<?php
+// dd($donnees[0]['id']);
+?>
+
+
 <!DOCTYPE html>
 <html class="dark" lang="fr">
 
@@ -100,6 +105,9 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
+            <button id="add-doc-btn" class="flex items-center gap-2 hidden rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[20px]">note_add</span>
+            </button>
             <button id="new-doc-btn" class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
                 <span class="material-symbols-outlined text-[20px]">add</span>
                 Nouveau Document
@@ -136,12 +144,12 @@
                         <div class="relative group">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none">description</span>
-                            <select
+                            <select id="type"
                                 class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer">
                                 <option value="">Sélectionner un type...</option>
                                 <option value="transfert">Transfert Inter-Stock</option>
-                                <option value="reception">Réception Fournisseur</option>
-                                <option value="expedition">Expédition Client</option>
+                                <option value="entree">Réception Fournisseur</option>
+                                <option value="sortie">Expédition Client</option>
                                 <option value="inventaire">Ajustement Inventaire</option>
                             </select>
                         </div>
@@ -155,7 +163,8 @@
                             <input
                                 class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 type="date"
-                                value="2023-10-27" />
+                                value="2023-10-27"
+                                id="date" />
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -165,12 +174,17 @@
                             <div class="relative group">
                                 <span
                                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none">warehouse</span>
-                                <select
+                                <select id="source"
                                     class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer">
                                     <option value="">Choisir...</option>
-                                    <option value="lyon">Entrepôt Lyon</option>
-                                    <option value="paris">Entrepôt Paris</option>
-                                    <option value="marseille">Magasin Marseille</option>
+                                    <?php
+                                    foreach ($donnees as $e):
+                                    ?>
+                                        <option value="<?= e($e['id']) ?>"><?= e($e['nom']) ?></option>
+
+                                    <?php
+                                    endforeach
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -180,12 +194,17 @@
                             <div class="relative group">
                                 <span
                                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary pointer-events-none">location_on</span>
-                                <select
-                                    class="w-full h-12 bg-background-dark/50 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer">
+                                <select id="destination"
+                                    class="w-full h-12 bg-background-dark/70 border border-border-dark rounded-xl pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer">
                                     <option value="">Choisir...</option>
-                                    <option value="paris">Entrepôt Paris</option>
-                                    <option value="lyon">Entrepôt Lyon</option>
-                                    <option value="lille">Boutique Lille</option>
+                                    <?php
+                                    foreach ($donnees as $e):
+                                    ?>
+                                        <option value="<?= e($e['id']) ?>"><?= e($e['nom']) ?></option>
+
+                                    <?php
+                                    endforeach
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -193,7 +212,7 @@
                 </div>
                 <div
                     class="p-8 bg-background-dark/30 border-t border-border-dark flex gap-4">
-                    <button
+                    <button id="startbtn"
                         class="flex-1 h-12 bg-emerald-accent hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">play_arrow</span>
                         Commencer la saisie
@@ -325,28 +344,29 @@
                             <label class="text-[10px] text-slate-500 uppercase font-bold">Date d'activité</label>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="material-symbols-outlined text-primary text-lg">calendar_today</span>
-                                <span class="text-sm font-bold">Transfert Inter-Stock</span>
+                                <span class="text-sm font-bold" id="v-date">Transfert Inter-Stock</span>
                             </div>
                         </div>
                         <div class="p-3 bg-background-dark/50 rounded-lg border border-border-dark">
                             <label class="text-[10px] text-slate-500 uppercase font-bold">Type de Document</label>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="material-symbols-outlined text-primary text-lg">move_item</span>
-                                <span class="text-sm font-bold">Transfert Inter-Stock</span>
+                                <span class="text-sm font-bold" id="v-type">Transfert Inter-Stock</span>
                             </div>
                         </div>
                         <div class="p-3 bg-background-dark/50 rounded-lg border border-border-dark">
                             <label class="text-[10px] text-slate-500 uppercase font-bold">Source</label>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="material-symbols-outlined text-slate-400 text-lg">warehouse</span>
-                                <span class="text-sm font-semibold">Entrepôt Lyon Principal</span>
+                                <span class="text-sm font-semibold" id="v-source">Magasin Paris Sud</span>
+
                             </div>
                         </div>
                         <div class="p-3 bg-background-dark/50 rounded-lg border border-border-dark">
                             <label class="text-[10px] text-slate-500 uppercase font-bold">Destination</label>
                             <div class="flex items-center gap-2 mt-1 text-primary">
                                 <span class="material-symbols-outlined text-lg">forward</span>
-                                <span class="text-sm font-semibold">Magasin Paris Sud</span>
+                                <span class="text-sm font-semibold" id="v-destination">Magasin Paris Sud</span>
                             </div>
                         </div>
                     </div>
@@ -356,19 +376,24 @@
                     <div class="space-y-3 px-1">
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-slate-400">Total Articles</span>
-                            <span class="font-bold">27 unités</span>
+                            <span class="font-bold"><span id="v-qty"></span> Articles</span>
+
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <span class="text-slate-400">Poids Estimé</span>
-                            <span class="font-bold">14.5 kg</span>
+                            <span class="text-slate-400">Total Articles par unités</span>
+                            <span class="font-bold"><span id="v-tt"></span> unités</span>
                         </div>
                         <div class="flex justify-between items-center pt-3 border-t border-border-dark/30">
-                            <span class="text-primary font-bold text-sm uppercase">Valeur Totale</span>
-                            <span class="text-lg font-black text-white">596,00 €</span>
+                            <span class="text-primary font-bold text-sm uppercase">Valeur Totale unit</span>
+                            <p class="text-lg font-black text-white"><span id="v-utotal">596,00</span><span> $</span></p>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-border-dark/30">
+                            <span class="text-primary font-bold text-sm uppercase">Valeur Totale Générale</span>
+                            <p class="text-lg font-black text-white"><span id="v-total">596,00</span><span> $</span></p>
                         </div>
                         <div class="pt-4 border-t border-border-dark">
                             <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Commentaire</label>
-                            <textarea class="w-full bg-background-dark/30 border-border-dark rounded-lg text-xs p-3 focus:ring-primary h-24" placeholder="Note interne..."></textarea>
+                            <textarea id="comment" rows="3" class="w-full resize-none  bg-background-dark/30 border-border-dark rounded-lg text-xs p-3 focus:ring-primary h-24" placeholder="Note interne..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -378,14 +403,48 @@
                     <span class="material-symbols-outlined text-sm">cancel</span>
                     Annuler
                 </button>
-                <button class="w-full py-3 rounded-lg border border-green-500/30 text-green-500 text-xs font-bold hover:bg-green-500/10 transition-colors flex items-center justify-center gap-2">
+                <button id="save-btn" class="w-full py-3 rounded-lg border border-green-500/30 text-green-500 text-xs font-bold hover:bg-green-500/10 transition-colors flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-sm">save</span>
                     Sauvegarder
                 </button>
             </div>
         </aside>
     </div>
+    <!-- Bouton flottant Desktop centré -->
+    <div id="draftButtonWrapper" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <button id="draftButton"
+            class="w-64 bg-primary text-background-dark p-4 rounded-2xl shadow-2xl flex items-center justify-between font-bold active:scale-[0.98] transition-transform">
+            <div class="flex items-center gap-3">
+                <div id="draftCount" class="bg-black/20 px-3 py-1 rounded-lg">3</div>
+                <span>Brouillons</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+
+
+
+    <!-- Liste des brouillons (dark mode) -->
+    <div id="draftList" class="fixed inset-0 bg-black/70 flex justify-center items-start pt-20 hidden z-50">
+        <div class="bg-gray-900 rounded-2xl w-11/12 max-w-md p-4 shadow-xl text-gray-100">
+            <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Documents en brouillon</h3>
+            <ul id="draftItems" class="space-y-2">
+                <!-- Les items seront injectés par JS -->
+            </ul>
+            <button id="closeDrafts" class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg font-bold transition-colors">
+                Fermer
+            </button>
+        </div>
+    </div>
+
+
+
     <div class="fixed inset-0 -z-10 opacity-20 pointer-events-none" style="background-image: radial-gradient(#135bec 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
+    <script>
+        const entrepots = <?= json_encode($donnees) ?>
+    </script>
     <script src="js/document/modal.js"></script>
     <script src="js/document/app.js"></script>
 </body>

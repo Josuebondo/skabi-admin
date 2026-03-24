@@ -42,6 +42,7 @@ class Modele
     protected bool $existe = false;
     protected array $jointures = [];
 
+
     protected array $groupBys = [];
     protected array $orderBys = [];
     protected array $havingConditions = [];
@@ -49,6 +50,7 @@ class Modele
 
     protected ?int $limite = null;
     protected ?int $decalage = null;
+
     public function __construct()
     {
         $this->bd = BaseBD::obtenir();
@@ -56,16 +58,7 @@ class Modele
         // Deduire la table du nom de classe si non définie
 
     }
-    /**
-     * Définit les colonnes à sélectionner (avec alias possibles)
-     * @param array $colonnes
-     * @return self
-     */
-    public function selectionner(array $colonnes): self
-    {
-        $this->colonnes = $colonnes;
-        return $this;
-    }
+
     /**
      * Récupère tous les enregistrements
      */
@@ -81,6 +74,38 @@ class Modele
             $modele->existe = true;
             return $modele;
         }, $resultats);
+    }
+    public static function tous(): array
+    {
+        $instance = new static();
+        $sql = "SELECT * FROM {$instance->table}";
+        $resultats = $instance->bd->tous($sql);
+
+        return $resultats;
+    }
+    /**
+     * Définit les colonnes à sélectionner (avec alias possibles)
+     * @param array $colonnes
+     * @return self
+     */
+    public function selectionner(array $colonnes): self
+    {
+        $this->colonnes = $colonnes;
+        return $this;
+    }
+    /**
+     * incrementer les valeur
+     */
+    public function incrementer(string $champ, int $valeur = 1): bool
+    {
+        try {
+            $this->$champ = ($this->$champ ?? 0) + $valeur;
+            $this->mettreAJour();
+            return true;
+        } catch (Exception $e) {
+            log_app($e->getMessage(), 'ERROR');
+            return false;
+        }
     }
 
     /**
@@ -116,6 +141,10 @@ class Modele
         $instance->parametres[] = $valeur;
         return $instance;
     }
+
+     // -----------------------
+    // ALIAS
+    // -----------------------
     /**
      * Condition HAVING 
      */
@@ -257,7 +286,26 @@ class Modele
             'total_pages' => ceil($total / $parPage)
         ];
     }
+    /**
+     * Compte le nombre d'enregistrements correspondant aux conditions actuelles
+     *
+     * @return int
+     */
+    public function compter(): int
+    {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
 
+        // WHERE
+        if (!empty($this->conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $this->conditions);
+        }
+
+        // Exécution
+        $params = $this->parametres;
+        $resultat = $this->bd->une($sql, $params);
+
+        return (int)($resultat['total'] ?? 0);
+    }
     /**
      * Relation aPlusieurs (hasMany)
      */
@@ -383,13 +431,7 @@ class Modele
         }, $resultats);
     }
 
-    /**
-     * Charge une relation
-     */
-    public function avec(string $table, string $colonneLocale, string $colonneEtrangere): self
-    {
-        return $this->joindre($table, $colonneLocale, $colonneEtrangere);
-    }
+
     /**
      * Ajoute une jointure INNER JOIN à la requête
      */
@@ -397,18 +439,7 @@ class Modele
     {
         return $this->ajouterJointure('INNER JOIN', $tableNom, $colonneLocale, $colonneEtrangere, $operateur);
     }
-    public function compter(): int
-    {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
 
-        if (!empty($this->conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $this->conditions);
-        }
-
-        $resultat = $this->bd->une($sql, $this->parametres);
-
-        return (int)$resultat['total'];
-    }
     /**
      * Ajoute une jointure LEFT JOIN à la requête
      */
@@ -452,22 +483,8 @@ class Modele
      */
     public function premier(): ?self
     {
-        $sql = "SELECT * FROM {$this->table}";
 
-        if (!empty($this->conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $this->conditions);
-        }
-
-        $sql .= " LIMIT 1";
-        $donnees = $this->bd->une($sql, $this->parametres);
-
-        if (!$donnees) {
-            return null;
-        }
-
-        $this->donnees = $donnees;
-        $this->existe = true;
-        return $this;
+        return $this->obtenir()[0] ?? null;
     }
 
     /**
@@ -569,6 +586,13 @@ class Modele
      * Vérifie si un attribut existe
      */
     public function __isset($nom): bool
+    {
+        return isset($this->donnees[$nom]);
+    }
+    /**
+     * Vérifie si un attribut existe
+     */
+    public function existe($nom): bool
     {
         return isset($this->donnees[$nom]);
     }
