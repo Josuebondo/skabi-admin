@@ -1,26 +1,7 @@
-
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # Définir la base correctement
-    RewriteBase /%{ENV:URL_APPLICATIO}public/
-    RewriteCond %{ENV:URL_APPLICATIO} !^/public/
-    RewriteRule ^(.*)$ /%{ENV:URL_APPLICATIO}public/$1 [L]
-    
-    # Exclure les fichiers et dossiers réels
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    
-    # Rediriger vers index.php avec le chemin comme PATH_INFO
-    RewriteRule ^(.*)$ index.php [QSA,L,E=PATH_INFO:/$1]
+RewriteEngine On
+RewriteBase /public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
 </IfModule>
-
-# Désactiver le listage des dossiers
-Options -Indexes
-
-# En-têtes de sécurité
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-</IfModule>
-
