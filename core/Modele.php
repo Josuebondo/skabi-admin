@@ -29,16 +29,7 @@ use Exception;
 class Modele
 
 {
-    /**
-     * Définit les colonnes à sélectionner (avec alias possibles)
-     * @param array $colonnes
-     * @return self
-     */
-    public function selectionner(array $colonnes): self
-    {
-        $this->colonnes = $colonnes;
-        return $this;
-    }
+
 
 
     protected BaseBD $bd;
@@ -46,9 +37,19 @@ class Modele
     protected string $clesPrimaire = 'id';
     protected array $donnees = [];
     protected array $conditions = [];
+    protected array $colonnes = ['*'];
     protected array $parametres = [];
     protected bool $existe = false;
     protected array $jointures = [];
+
+
+    protected array $groupBys = [];
+    protected array $orderBys = [];
+    protected array $havingConditions = [];
+    protected array $havingParametres = [];
+
+    protected ?int $limite = null;
+    protected ?int $decalage = null;
 
     public function __construct()
     {
@@ -73,6 +74,38 @@ class Modele
             $modele->existe = true;
             return $modele;
         }, $resultats);
+    }
+    public static function tous(): array
+    {
+        $instance = new static();
+        $sql = "SELECT * FROM {$instance->table}";
+        $resultats = $instance->bd->tous($sql);
+
+        return $resultats;
+    }
+    /**
+     * Définit les colonnes à sélectionner (avec alias possibles)
+     * @param array $colonnes
+     * @return self
+     */
+    public function selectionner(array $colonnes): self
+    {
+        $this->colonnes = $colonnes;
+        return $this;
+    }
+    /**
+     * incrementer les valeur
+     */
+    public function incrementer(string $champ, int $valeur = 1): bool
+    {
+        try {
+            $this->$champ = ($this->$champ ?? 0) + $valeur;
+            $this->mettreAJour();
+            return true;
+        } catch (Exception $e) {
+            log_app($e->getMessage(), 'ERROR');
+            return false;
+        }
     }
 
     /**
@@ -109,6 +142,31 @@ class Modele
         return $instance;
     }
 
+     // -----------------------
+    // ALIAS
+    // -----------------------
+    /**
+     * Condition HAVING 
+     */
+    public function a($colonne, $operateur = '=', $valeur = null): self
+    {
+        if ($valeur === null) {
+            $valeur = $operateur;
+            $operateur = '=';
+        }
+
+        $this->havingConditions[] = "$colonne $operateur ?";
+        $this->havingParametres[] = $valeur;
+
+        return $this;
+    }
+    /**
+     * Alias SQL de a()
+     */
+    public function having($colonne, $operateur = '=', $valeur = null): self
+    {
+        return $this->a($colonne, $operateur, $valeur);
+    }
     /**
      * Ajoute une condition ET
      */
@@ -123,7 +181,200 @@ class Modele
         $this->parametres[] = $valeur;
         return $this;
     }
+    /**
+     * GROUP BY 
+     */
+    public function grouperPar(string $colonne): self
+    {
+        $this->groupBys[] = $colonne;
+        return $this;
+    }
 
+    /**
+     * ORDER BY (français)
+     */
+    public function trierPar(string $colonne, string $direction = 'ASC'): self
+    {
+        $direction = strtoupper($direction);
+        $this->orderBys[] = "$colonne $direction";
+        return $this;
+    }
+
+    /**
+     * Alias SQL
+     */
+    public function orderBy(string $colonne, string $direction = 'ASC'): self
+    {
+        return $this->trierPar($colonne, $direction);
+    }
+
+    /**
+     * OR HAVING (français)
+     */
+    public function ouA($colonne, $operateur = '=', $valeur = null): self
+    {
+        if ($valeur === null) {
+            $valeur = $operateur;
+            $operateur = '=';
+        }
+
+        $this->havingConditions[] = "OR $colonne $operateur ?";
+        $this->havingParametres[] = $valeur;
+
+        return $this;
+    }
+
+    /**
+     * Alias SQL
+     */
+    public function orHaving($colonne, $operateur = '=', $valeur = null): self
+    {
+        return $this->ouA($colonne, $operateur, $valeur);
+    }
+    /**
+     * Alias SQL
+     */
+    public function groupBy(string $colonne): self
+    {
+        return $this->grouperPar($colonne);
+    }
+
+    /**
+     * Relation appartientA (belongsTo)
+     */
+    public function appartientA(string $modele, string $cleEtrangere, string $cleProprietaire = 'id')
+    {
+        $instance = new $modele();
+
+        $valeur = $this->donnees[$cleEtrangere] ?? null;
+
+        if (!$valeur) {
+            return null;
+        }
+
+        return $modele::ou($cleProprietaire, $valeur)->premier();
+    }
+
+    /**
+     * Pagination complète
+     */
+    public function paginer(int $parPage = 10, int $page = 1): array
+    {
+        $offset = ($page - 1) * $parPage;
+
+        // requête totale
+        $sqlTotal = "SELECT COUNT(*) as total FROM {$this->table}";
+
+        if (!empty($this->conditions)) {
+            $sqlTotal .= " WHERE " . implode(' AND ', $this->conditions);
+        }
+
+        $result = $this->bd->une($sqlTotal, $this->parametres);
+        $total = (int)$result['total'];
+
+        // récupérer les données
+        $this->limiter($parPage);
+        $this->decalage($offset);
+
+        $donnees = $this->obtenir();
+
+        return [
+            'donnees' => $donnees,
+            'total' => $total,
+            'par_page' => $parPage,
+            'page' => $page,
+            'total_pages' => ceil($total / $parPage)
+        ];
+    }
+    /**
+     * Compte le nombre d'enregistrements correspondant aux conditions actuelles
+     *
+     * @return int
+     */
+    public function compter(): int
+    {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
+
+        // WHERE
+        if (!empty($this->conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $this->conditions);
+        }
+
+        // Exécution
+        $params = $this->parametres;
+        $resultat = $this->bd->une($sql, $params);
+
+        return (int)($resultat['total'] ?? 0);
+    }
+    /**
+     * Relation aPlusieurs (hasMany)
+     */
+    public function aPlusieurs(string $modele, string $cleEtrangere, string $cleLocale = 'id'): array
+    {
+        $valeur = $this->donnees[$cleLocale] ?? null;
+
+        if (!$valeur) {
+            return [];
+        }
+
+        return $modele::ou($cleEtrangere, $valeur)->obtenir();
+    }
+
+    /**
+     * Relation plusieursAPlusieurs (many-to-many)
+     */
+    public function plusieursAPlusieurs(
+        string $modele,
+        string $tablePivot,
+        string $cleLocale,
+        string $cleEtrangere
+    ): array {
+
+        $instance = new $modele();
+
+        $valeurLocale = $this->donnees[$this->clesPrimaire] ?? null;
+
+        if (!$valeurLocale) {
+            return [];
+        }
+
+        $tableCible = $instance->table;
+
+        $sql = "
+        SELECT $tableCible.*
+        FROM $tableCible
+        INNER JOIN $tablePivot
+        ON $tableCible.{$instance->clesPrimaire} = $tablePivot.$cleEtrangere
+        WHERE $tablePivot.$cleLocale = ?
+    ";
+
+        $resultats = $this->bd->tous($sql, [$valeurLocale]);
+
+        return array_map(function ($donnees) use ($modele) {
+
+            $modeleInstance = new $modele();
+            $modeleInstance->donnees = $donnees;
+            $modeleInstance->existe = true;
+
+            return $modeleInstance;
+        }, $resultats);
+    }
+    /**
+     * Limite le nombre de résultats
+     */
+    public function limiter(int $nombre): self
+    {
+        $this->limite = $nombre;
+        return $this;
+    }
+    /**
+     * Décale les résultats
+     */
+    public function decalage(int $nombre): self
+    {
+        $this->decalage = $nombre;
+        return $this;
+    }
     /**
      * Récupère les résultats
      */
@@ -132,19 +383,45 @@ class Modele
         $colonnes = !empty($this->colonnes) ? implode(', ', $this->colonnes) : '*';
         $sql = "SELECT $colonnes FROM {$this->table}";
 
-        // Ajout des jointures si présentes
-        if (isset($this->jointures) && !empty($this->jointures)) {
+        // Ajout des jointures
+        if (!empty($this->jointures)) {
             foreach ($this->jointures as $join) {
-                $type = isset($join['type']) ? $join['type'] : 'INNER JOIN';
+                $type = $join['type'] ?? 'INNER JOIN';
                 $sql .= " {$type} {$join['table']} ON {$join['colonne_locale']} {$join['operateur']} {$join['colonne_etrangere']}";
             }
         }
 
+        // WHERE
         if (!empty($this->conditions)) {
             $sql .= " WHERE " . implode(' AND ', $this->conditions);
         }
 
-        $resultats = $this->bd->tous($sql, $this->parametres);
+        // GROUP BY
+        if (!empty($this->groupBys)) {
+            $sql .= " GROUP BY " . implode(', ', $this->groupBys);
+        }
+
+        // HAVING
+        if (!empty($this->havingConditions)) {
+            $sql .= " HAVING " . implode(' ', $this->havingConditions);
+        }
+
+        // ORDER BY
+        if (!empty($this->orderBys)) {
+            $sql .= " ORDER BY " . implode(', ', $this->orderBys);
+        }
+        // LIMIT
+        if ($this->limite !== null) {
+            $sql .= " LIMIT {$this->limite}";
+        }
+
+        // OFFSET
+        if ($this->decalage !== null) {
+            $sql .= " OFFSET {$this->decalage}";
+        }
+        // Exécution
+        $params = array_merge($this->parametres, $this->havingParametres);
+        $resultats = $this->bd->tous($sql, $params);
 
         return array_map(function ($donnees) {
             $modele = new static();
@@ -153,6 +430,8 @@ class Modele
             return $modele;
         }, $resultats);
     }
+
+
     /**
      * Ajoute une jointure INNER JOIN à la requête
      */
@@ -204,22 +483,8 @@ class Modele
      */
     public function premier(): ?self
     {
-        $sql = "SELECT * FROM {$this->table}";
 
-        if (!empty($this->conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $this->conditions);
-        }
-
-        $sql .= " LIMIT 1";
-        $donnees = $this->bd->une($sql, $this->parametres);
-
-        if (!$donnees) {
-            return null;
-        }
-
-        $this->donnees = $donnees;
-        $this->existe = true;
-        return $this;
+        return $this->obtenir()[0] ?? null;
     }
 
     /**
@@ -321,6 +586,13 @@ class Modele
      * Vérifie si un attribut existe
      */
     public function __isset($nom): bool
+    {
+        return isset($this->donnees[$nom]);
+    }
+    /**
+     * Vérifie si un attribut existe
+     */
+    public function existe($nom): bool
     {
         return isset($this->donnees[$nom]);
     }

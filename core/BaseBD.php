@@ -101,6 +101,21 @@ class BaseBD
     {
         return $this->connexion;
     }
+    /**
+     * Gère les erreurs SQL et retourne un message propre
+     */
+    private function gererErreur(Exception $e, string $sql): Exception
+    {
+        if ($this->debug) {
+            // En mode debug on montre tout
+            return new Exception(
+                "Erreur SQL : " . $e->getMessage() . "\nRequête : " . $sql
+            );
+        }
+
+        // Messages propres pour l'utilisateur
+        return new Exception("Une erreur est survenue lors du traitement des données.");
+    }
 
     /**
      * Exécute une requête simple
@@ -111,10 +126,8 @@ class BaseBD
             $stmt = $this->connexion->prepare($sql);
             return $stmt->execute($params);
         } catch (Exception $e) {
-            if ($this->debug) {
-                throw new Exception("Erreur SQL: {$e->getMessage()}\nRequête: $sql");
-            }
-            throw $e;
+
+            throw $this->gererErreur($e, $sql);
         }
     }
 
@@ -128,10 +141,7 @@ class BaseBD
             $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (Exception $e) {
-            if ($this->debug) {
-                throw new Exception("Erreur SQL: {$e->getMessage()}\nRequête: $sql");
-            }
-            throw $e;
+            throw $this->gererErreur($e, $sql);;
         }
     }
 
@@ -145,10 +155,7 @@ class BaseBD
             $stmt->execute($params);
             return $stmt->fetch() ?: null;
         } catch (Exception $e) {
-            if ($this->debug) {
-                throw new Exception("Erreur SQL: {$e->getMessage()}\nRequête: $sql");
-            }
-            throw $e;
+            throw $this->gererErreur($e, $sql);
         }
     }
 

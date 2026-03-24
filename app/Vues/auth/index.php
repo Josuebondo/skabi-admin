@@ -118,7 +118,7 @@
                 </button>
 
 
-                <p id="loginMessage" class="mt-2 text-sm text-red-600"></p>
+                <p id="loginMessage" class="mt-2 text-sm text-center text-red-600"></p>
             </div>
             <div class="mt-8 pt-6 border-t border-white/5 text-center">
                 <p class="text-white/40 text-sm">

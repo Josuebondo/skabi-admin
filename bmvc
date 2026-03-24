@@ -184,7 +184,7 @@ class BMVCCLI
 <?php
 
 namespace App\Controleurs;
-
+use App\BaseControleur;
 use Core\Requete;
 use Core\Reponse;
 

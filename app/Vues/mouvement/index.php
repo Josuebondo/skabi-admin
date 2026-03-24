@@ -61,6 +61,11 @@
             grid-template-columns: repeat(1, minmax(0, 1fr));
             gap: 0.75rem;
         }
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 0.70rem;
+        }
                     
             @keyframes spin {
                 0% { transform: rotate(0deg); }
@@ -72,9 +77,12 @@
             }
 
 
-        @media (min-width: 640px) { .movement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (min-width: 1024px) { .movement-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-        @media (min-width: 1536px) { .movement-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+        @media (min-width: 640px) { .movement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }  }
+        @media (min-width: 1024px) { .movement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (min-width: 1536px) { .movement-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+        @media (min-width: 640px) { .document-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }  }
+        @media (min-width: 1024px) { .document-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (min-width: 1536px) { .document-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
     </style>
 </head>
 
@@ -334,7 +342,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 bg-slate-900 border border-dark-border p-3 rounded-xl">
                         <div class="relative">
                             <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
-                            <input class="w-full bg-slate-800 border-slate-700 text-white rounded-lg pl-9 pr-4 py-2 text-xs focus:ring-1 focus:ring-primary placeholder:text-slate-500" placeholder="Rechercher N° Document (ex: D-4421)" type="text" />
+                            <input id="Bsearch-input" class="w-full bg-slate-800 border-slate-700 text-white rounded-lg pl-9 pr-4 py-2 text-xs focus:ring-1 focus:ring-primary placeholder:text-slate-500" placeholder="Rechercher N° Document (ex: D-4421)" type="text" />
                         </div>
                         <div class="flex items-center gap-2 px-3 bg-slate-800 border border-slate-700 rounded-lg">
                             <span class="material-icons text-slate-500 text-sm">event</span>
@@ -349,7 +357,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="space-y-3">
+                    <div class="space-y-3 document-grid" id="documents-list">
                         <div class="bg-dark-surface border border-dark-border rounded-xl p-4 hover:border-slate-500 transition-all">
                             <div class="flex items-center justify-between border-b border-dark-border pb-3 mb-3">
                                 <div class="flex items-center gap-3">
@@ -385,6 +393,7 @@
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                         <div class="bg-dark-surface border border-dark-border rounded-xl p-4 hover:border-slate-500 transition-all">
                             <div class="flex items-center justify-between border-b border-dark-border pb-3 mb-3">
@@ -421,6 +430,16 @@
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-6 px-2">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Affichage 1-10 sur 210</span>
+                        <div class="flex gap-2">
+                            <button id="bprev" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-500"><span class="material-icons text-sm">chevron_left</span></button>
+                            <div id="bpagination" class=" flex gap-2 flex-row">
+                                <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-[10px] font-bold">1</button>
+                            </div>
+                            <button id="bnext" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-500"><span class="material-icons text-sm">chevron_right</span></button>
                         </div>
                     </div>
                 </section>
@@ -564,8 +583,8 @@
                                     <span class="material-icons">arrow_back</span>
                                 </label>
                                 <div>
-                                    <h2 class="text-lg font-bold text-white leading-tight">Document #D-4421</h2>
-                                    <p class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Type : Bon de Sortie</p>
+                                    <h2 class="text-lg font-bold text-white leading-tight">Document <span id="bon-doc"></span></h2>
+                                    <p class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Type : <span id="bon-type"></span></p>
                                 </div>
                             </div>
                             <div class="flex gap-2">
@@ -584,15 +603,15 @@
                                     <div class="bg-dark-bg p-4 rounded-xl border border-dark-border space-y-4">
                                         <div>
                                             <p class="text-[10px] text-slate-500">Numéro</p>
-                                            <p class="text-xs font-bold text-slate-300">D-4421</p>
+                                            <p class="text-xs font-bold text-slate-300">D-<span id="bon-id"></span></p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] text-slate-500">Crée par :</p>
+                                            <p class="text-xs font-bold text-slate-300"><span id="bon-createur"></span></p>
                                         </div>
                                         <div>
                                             <p class="text-[10px] text-slate-500">Date et Heure</p>
-                                            <p class="text-xs font-bold text-slate-300">24/10/2023 &Agrave;  14:22:15</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-[10px] text-slate-500">Opérateur</p>
-                                            <p class="text-xs font-bold text-slate-300">Jean Martin</p>
+                                            <p class="text-xs font-bold text-slate-300"><span id="bon-date"></span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -603,7 +622,7 @@
                                             <span class="material-icons text-accent-coral text-sm mt-0.5">local_shipping</span>
                                             <div>
                                                 <p class="text-xs text-slate-400 mb-0.5">Articles Concernés</p>
-                                                <p class="text-lg font-black text-white">3 <span class="text-[10px] font-medium text-slate-500 ml-1">Articles</span></p>
+                                                <p class="text-lg font-black text-white"><span id="bon-qty"></span> <span class="text-[10px] font-medium text-slate-500 ml-1">Articles</span></p>
                                             </div>
                                         </div>
                                         <div class="space-y-4 relative z-10">
@@ -613,7 +632,7 @@
                                                 </div>
                                                 <div>
                                                     <p class="text-[10px] text-slate-500">ORIGINE</p>
-                                                    <p class="text-xs font-bold text-slate-300">Depot Principal</p>
+                                                    <p class="text-xs font-bold text-slate-300"><span id="bon-source"></span></p>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-3">
@@ -622,7 +641,7 @@
                                                 </div>
                                                 <div>
                                                     <p class="text-[10px] text-primary">DESTINATION</p>
-                                                    <p class="text-xs font-bold text-slate-300">Boutique A</p>
+                                                    <p class="text-xs font-bold text-slate-300"><span id="bon-destination"></span></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -633,26 +652,26 @@
                                     <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-dark-border pb-1">Statut &amp; Validation</h3>
                                     <div class="bg-dark-bg p-4 rounded-xl border border-dark-border space-y-4">
                                         <div>
-                                            <p class="text-[10px] text-slate-500">Type de Document</p>
-                                            <p class="text-xs font-bold text-slate-300">Bon de Sortie</p>
-                                        </div>
-                                        <div>
                                             <p class="text-[10px] text-slate-500">Statut</p>
-                                            <div class="flex items-center gap-2 mt-1">
+                                            <div class="flex items-center gap-2 mt-1" id="b-status-contaner">
                                                 <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
-                                                <span class="text-xs font-bold text-accent-emerald">Validé</span>
+                                                <span class="text-xs font-bold text-accent-emerald"></span>
                                             </div>
                                         </div>
                                         <div>
-                                            <p class="text-[10px] text-slate-500">Refference Liée</p>
-                                            <p class="text-xs font-mono font-bold text-slate-300">MV-77421</p>
+                                            <p class="text-[10px] text-slate-500">Validé par :</p>
+                                            <p class="text-xs font-bold text-slate-300"><span id="b-validateur"></span></p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] text-slate-500">Date et Heure</p>
+                                            <p class="text-xs font-mono font-bold text-slate-300"><span id="b-v-date"></span></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="space-y-4">
                                 <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-dark-border pb-1">Lignes de Document</h3>
-                                <div class="bg-dark-bg/50 p-4 rounded-xl border border-dashed border-dark-border space-y-3">
+                                <div id="b-items" class="bg-dark-bg/50 p-4 rounded-xl border border-dashed border-dark-border space-y-3">
                                     <div class="flex items-center justify-between text-xs">
                                         <span class="text-slate-300 font-semibold">Processeur Ryzen 9 7950X</span>
                                         <span class="text-accent-coral font-black">-25</span>
@@ -673,18 +692,25 @@
                                 Derniére modification le 24 Oct 2023 &Agrave; 14:45 par Admin
                             </div>
                             <div class="flex gap-4">
-                                <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">SUPPRIMER</button>
-                                <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">EXPORTER PDF</button>
+                                <button id="b-delete-btn" class="px-4 py-2 bg-red-800 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                                    <span class="material-icons text-sm" id="b-d-btn-icon">delete</span> <span id="b-d-btntxt">SUPPRIMER</span>
+                                </button>
+
+                                <!-- <button class="text-[10px] font-bold text-slate-400 hover:text-white transition-colors">VALIDER</button> -->
+                                <button id="b-validate-btn" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                                    <span class="material-icons text-sm " id="b--v-btn-icon">check</span><span id="b-btntxt"> VALIDER</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </section>
+
             </div>
         </main>
     </div>
-    <script src="/js/mouvement/sections-toggle.js"></script>
-    <script src="/js/mouvement/Auth.js"></script>
-    <script type="module" src="/js/mouvement/main.js"></script>
+    <script src="js/mouvement/sections-toggle.js"></script>
+    <script src="js/mouvement/Auth.js"></script>
+    <script type="module" src="js/mouvement/main.js"></script>
 
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
 </body>

@@ -20,6 +20,16 @@ async function login(username, password) {
     const data = await res.json();
     console.log("Réponse login :", data);
     if (data.success == true) {
+      if (data.data.role != "admin") {
+        console.log("Rôle de l'utilisateur :", data.data.role);
+        loginMessage.textContent =
+          "Vous n'avez pas les droits pour accéder à cette page";
+        stopLoading();
+        setTimeout(() => {
+          loginMessage.textContent = "";
+        }, 3000);
+        return false;
+      }
       loginMessage.classList.remove("text-red-600");
       loginMessage.classList.add("text-green-600");
       loginMessage.textContent = "Connexion réussie, redirection...";
@@ -43,7 +53,11 @@ async function login(username, password) {
       loginMessage.classList.remove("text-green-600");
       loginMessage.classList.add("text-red-600");
       loginMessage.textContent = data.message || "Identifiants incorrects";
+
       stopLoading();
+      setTimeout(() => {
+        loginMessage.textContent = "";
+      }, 3000);
       return false;
     }
   } catch (err) {
@@ -52,6 +66,9 @@ async function login(username, password) {
     loginMessage.classList.add("text-red-600");
     loginMessage.textContent = "Impossible de contacter le serveur";
     stopLoading();
+    setTimeout(() => {
+      loginMessage.textContent = "";
+    }, 3000);
     return false;
   } finally {
     // Masquer loader
