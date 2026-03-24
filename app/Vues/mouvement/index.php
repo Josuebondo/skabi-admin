@@ -88,26 +88,35 @@
 
 <body class="font-display">
     <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar for Desktop -->
         <aside class="hidden md:flex w-20 bg-slate-900 border-r border-dark-border flex-col items-center py-6 shrink-0">
             <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-primary/20">
                 <span class="material-icons text-white">inventory_2</span>
             </div>
             <nav class="flex-1 flex flex-col gap-4">
-                <a desabled class="w-12 h-12 flex items-center justify-center rounded-xl cursor-not-allowed text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Tableau de bord non disponible">
+                <a desabled class="w-12 h-12 flex items-center justify-center rounded-xl  text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Tableau de bord non disponible">
                     <span class="material-icons">dashboard</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Tableau de bord</span>
                 </a>
-                <a desabled class="w-12 h-12 flex items-center cursor-not-allowed justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Inventaire non disponible">
+                <a desabled class="w-12 h-12 flex items-center  justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Inventaire ">
                     <span class="material-icons">inventory</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Inventaire</span>
                 </a>
-                <a class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group relative" href="#" title="Mouvements">
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group relative" href="/mouvements" title="Mouvements">
                     <span class="material-icons">swap_horiz</span>
                     <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Mouvements</span>
                 </a>
-                <a desabled class="w-12 h-12 flex items-center cursor-not-allowed justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Rapports non disponible">
-                    <span class="material-icons">analytics</span>
-                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Rapports</span>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/articles" title="Articles">
+                    <span class=" material-icons">article</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Articles</span>
+                </a>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/documents" title="Documents">
+                    <span class=" material-icons">description</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Documents</span>
+                </a>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl  text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/versements" title="Versement">
+                    <span class="material-icons">account_balance_wallet</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Versements</span>
                 </a>
             </nav>
             <div>
@@ -708,9 +717,9 @@
             </div>
         </main>
     </div>
-    <script src="js/mouvement/sections-toggle.js"></script>
-    <script src="js/mouvement/Auth.js"></script>
-    <script type="module" src="js/mouvement/main.js"></script>
+    <script src="<?= asset('js/mouvement/sections-toggle.js') ?>"></script>
+    <script src="<?= asset('js/mouvement/Auth.js') ?>"></script>
+    <script type="module" src="<?= asset('js/mouvement/main.js') ?>"></script>
 
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
 </body>

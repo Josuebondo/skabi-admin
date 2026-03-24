@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoading();
     let res = await fetch("api/articles");
     let data = await res.json();
-
+    console.log(data);
     articles = data.data; // tableau d'articles
     localStorage.removeItem("articles");
     localStorage.setItem("articles", JSON.stringify(data.data));

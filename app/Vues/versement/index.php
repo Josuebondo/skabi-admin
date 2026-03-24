@@ -17,6 +17,7 @@ $users = $donnees['users'];
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -67,52 +68,65 @@ $users = $donnees['users'];
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display pb-24 lg:pb-0">
     <div class="flex min-h-screen">
         <!-- Sidebar for Desktop -->
-        <aside class="hidden lg:flex w-64 bg-white dark:bg-surface-dark border-r border-slate-200 dark:border-border-dark flex-col fixed h-full z-40">
-            <div class="p-6 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
-                    <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold uppercase tracking-wider text-primary">Admin Flux</h1>
-                    <p class="text-[10px] text-slate-500 uppercase font-bold opacity-70">Panel Financier</p>
-                </div>
+        <aside class="hidden md:flex w-20 bg-slate-900 border-r border-dark-border flex-col items-center py-6 shrink-0">
+            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-primary/20">
+                <span class="material-icons text-white">inventory_2</span>
             </div>
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    <span class="text-sm font-medium">Tableau de bord</span>
+            <nav class="flex-1 flex flex-col gap-4">
+                <a desabled class="w-12 h-12 flex items-center justify-center rounded-xl  text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Tableau de bord non disponible">
+                    <span class="material-icons">dashboard</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Tableau de bord</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20" href="#">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
-                    <span class="text-sm font-medium">Saisie des Flux</span>
+                <a desabled class="w-12 h-12 flex items-center  justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="#" title="Inventaire ">
+                    <span class="material-icons">inventory</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Inventaire</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-                    <span class="material-symbols-outlined">store</span>
-                    <span class="text-sm font-medium">Magasins</span>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/mouvements" title="Mouvements">
+                    <span class="material-icons">swap_horiz</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Mouvements</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-                    <span class="material-symbols-outlined">history</span>
-                    <span class="text-sm font-medium">Audit logs</span>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/articles" title="Articles">
+                    <span class=" material-icons">article</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Articles</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-                    <span class="material-symbols-outlined">settings</span>
-                    <span class="text-sm font-medium">Configuration</span>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" href="/documents" title="Documents">
+                    <span class=" material-icons">description</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Documents</span>
+                </a>
+                <a class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group relative" href="/versements" title="Versement">
+                    <span class="material-icons">account_balance_wallet</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Versements</span>
                 </a>
             </nav>
-            <div class="p-4 border-t border-slate-200 dark:border-border-dark">
-                <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-                        <span class="material-symbols-outlined text-primary">person</span>
+            <div>
+
+                <button id="profileBtn"
+                    class="mt-auto w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-800 transition-all relative"
+                    title="Profil">
+
+                    <div id="avatarContainer"
+                        class="w-10 h-10 rounded-full border-2 border-slate-700 overflow-hidden flex items-center justify-center bg-primary text-white font-bold text-sm">
+
+                        <!-- Image si existe -->
+                        <img id="avatarImg"
+                            class="w-full h-full object-cover hidden"
+                            alt="Profil" />
+
+                        <!-- Initiales si pas d'image -->
+                        <span id="avatarInitials"></span>
+
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium truncate text-slate-900 dark:text-white">Admin Central</p>
-                        <p class="text-[10px] text-slate-500 truncate uppercase">Bureau Siège</p>
-                    </div>
-                </div>
+                </button>
+
+                <!-- logout btn -->
+                <button id="logoutBtn" class="mt-4 w-12 h-12 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-800 hover:text-primary transition-all group relative" title="Déconnexion">
+                    <span class="material-icons">logout</span>
+                    <span class="absolute left-14 bg-slate-700 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50">Déconnexion</span>
             </div>
+
         </aside>
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col lg:ml-64 min-w-0">
+        <div class="flex-1 flex flex-col lg:ml-auto min-w-0">
             <!-- Mobile Top Bar -->
             <header class="lg:hidden sticky top-0 z-30 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -125,6 +139,7 @@ $users = $donnees['users'];
                     <span class="material-symbols-outlined">menu</span>
                 </button>
             </header>
+
             <main class="p-4 lg:p-8 space-y-6 lg:space-y-10 max-w-[1600px] mx-auto w-full">
                 <!-- Title Section -->
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -336,30 +351,31 @@ $users = $donnees['users'];
             </main>
         </div>
     </div>
+
     <!-- Mobile Bottom Navigation (Hidden on Desktop) -->
     <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-border-dark px-6 pb-6 pt-3 flex items-center justify-between">
-        <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+        <a class="flex flex-col items-center gap-1 text-slate-400" href="/dashboard">
             <span class="material-symbols-outlined text-2xl">dashboard</span>
             <span class="text-[10px] font-bold uppercase tracking-tighter">Dash</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-primary" href="#">
+        <a class="flex flex-col items-center gap-1 text-primary" href="/versements">
             <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
             <span class="text-[10px] font-bold uppercase tracking-tighter">Saisie</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+        <a class="flex flex-col items-center gap-1 text-slate-400" href="/articles">
             <span class="material-symbols-outlined text-2xl">store</span>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Magasins</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Articles</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-            <span class="material-symbols-outlined text-2xl">history</span>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Audit</span>
+        <a class="flex flex-col items-center gap-1 text-slate-400" href="/mouvements">
+            <span class="material-symbols-outlined text-2xl">swap_horiz</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">mouv</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-            <span class="material-symbols-outlined text-2xl">settings</span>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Config</span>
+        <a class="flex flex-col items-center gap-1 text-slate-400" href="/profile">
+            <span class="material-symbols-outlined text-2xl">person</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">profile</span>
         </a>
     </nav>
-
+    <script src="<?= asset('js/mouvement/Auth.js') ?>"></script>
     <script src="<?= asset('/js/versement/main.js') ?>"></script>
 </body>
 
