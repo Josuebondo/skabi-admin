@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace App\Controleurs;
 
 use App\BaseControleur;
 use Core\Requete;
