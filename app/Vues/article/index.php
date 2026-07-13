@@ -52,6 +52,7 @@
             display: grid;
             grid-template-columns: repeat(1, minmax(0, 1fr));
             gap: 0.75rem;
+            overflow-y: auto;
         }
         @media (min-width: 640px) { .grid-compact { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (min-width: 1024px) { .grid-compact { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -147,7 +148,7 @@
                 </div>
             </header>
 
-            <main class="flex-1 flex flex-col w-full px-4 py-6">
+            <main class="flex-1 flex flex-col w-full px-4 py-6 min-h-0">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Inventaire par Article</h1>
@@ -184,7 +185,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="grid-compact" id="grid-container">
+                <div class="grid-compact flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1" id="grid-container">
                     <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
@@ -272,9 +273,467 @@
                             </button>
                         </div>
                     </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">PRJ-4410-LED</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Projecteur LED 50W</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">12</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E3: </span>
+                                <span class="font-bold">30</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 42</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">CAB-1022-NET</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Câble Ethernet 10m</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">210</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] opacity-0">
+                                <span class="text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 210</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">OUT-0056-HD</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Perceuse Percussion</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">10</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 15</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">PRJ-4410-LED</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Projecteur LED 50W</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">12</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E3: </span>
+                                <span class="font-bold">30</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 42</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">CAB-1022-NET</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Câble Ethernet 10m</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">210</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] opacity-0">
+                                <span class="text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 210</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">OUT-0056-HD</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Perceuse Percussion</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">10</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 15</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">PRJ-4410-LED</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Projecteur LED 50W</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">12</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E3: </span>
+                                <span class="font-bold">30</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 42</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">CAB-1022-NET</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Câble Ethernet 10m</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">210</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] opacity-0">
+                                <span class="text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 210</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">OUT-0056-HD</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Perceuse Percussion</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">10</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 15</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">PRJ-4410-LED</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Projecteur LED 50W</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">12</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E3: </span>
+                                <span class="font-bold">30</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 42</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">CAB-1022-NET</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Câble Ethernet 10m</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">210</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] opacity-0">
+                                <span class="text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 210</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">OUT-0056-HD</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Perceuse Percussion</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">10</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 15</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">PRJ-4410-LED</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Projecteur LED 50W</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">12</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E3: </span>
+                                <span class="font-bold">30</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 42</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">CAB-1022-NET</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Câble Ethernet 10m</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">210</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] opacity-0">
+                                <span class="text-slate-500">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 210</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">OUT-0056-HD</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Perceuse Percussion</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">10</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 15</span>
+                            <button class="text-slate-400 group-hover:text-primary">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-colors group cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-primary/70 dark:text-primary/80 leading-none mb-1 uppercase">REF-8902-DX</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate group-hover:text-primary transition-colors">Vis à métaux M8</h3>
+                        </div>
+                        <div class="flex flex-col gap-1 py-2 border-y border-slate-100 dark:border-slate-800/50">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E1: </span>
+                                <span class="font-bold">120</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500">E2: </span>
+                                <span class="font-bold">45</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Total: 165</span>
+                            <button class="text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- Container des articles -->
-                <div id="grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto custom-scrollbar"></div>
 
                 <!-- Pagination -->
                 <div class="mt-8 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-4">
@@ -435,7 +894,7 @@
         </div>
     </div>
     <script src="<?= asset('js/mouvement/Auth.js') ?>"></script>
-    <script src="<?= asset('/js/articles/app.js') ?>"></script>
+    <!-- <script src="<?= asset('/js/articles/app.js') ?>"></script> -->
 </body>
 
 </html>
