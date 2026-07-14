@@ -733,7 +733,7 @@
 
                 </div>
                 <!-- Container des articles -->
-                <div id="grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto custom-scrollbar"></div>
+                <div id="grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto custom-scrollbar pr-1 "></div>
 
                 <!-- Pagination -->
                 <div class="mt-8 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-4">

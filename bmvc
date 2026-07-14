@@ -102,6 +102,7 @@ class BMVCCLI
             'demarrer' => true,
             'tinker' => true,
             'aide' => true,
+            'deploy' => true,
         ];
     }
 
@@ -114,6 +115,7 @@ class BMVCCLI
             'p' => 'port',
             'h' => 'help',
             'v' => 'version',
+
         ];
 
         return $aliases[$option] ?? $option;
@@ -133,6 +135,7 @@ class BMVCCLI
             'd' => 'demarrer',
             't' => 'tinker',
             'a' => 'aide',
+            'dep' => 'deploy',
         ];
 
         return $aliases[$commande] ?? $commande;
@@ -159,6 +162,7 @@ class BMVCCLI
             'tinker' => $this->tinker(),
             'aide', '--help', '-h' => $this->afficherAide(),
             'version', '--version', '-v' => $this->afficherVersion(),
+            'deploy' => $this->deploy(),
             default => $this->erreur("Commande inconnue: {$this->commande}"),
         };
     }
@@ -211,7 +215,26 @@ PHP;
         $this->succes("Contrôleur {$nom} créé avec succès!");
         $this->info("Chemin: {$chemin}");
     }
+    protected function deploy(): void
+    {
+        $this->info("🚀 Déploiement BMVC");
 
+        $this->executerCommande("git pull origin main");
+        $this->executerCommande("composer install --no-dev --optimize-autoloader");
+        $this->executerCommande("composer dump-autoload -o");
+
+        $this->succes("Déploiement terminé !");
+    }
+    protected function executerCommande(string $commande): void
+    {
+        $this->info("> {$commande}");
+
+        passthru($commande, $code);
+
+        if ($code !== 0) {
+            $this->erreur("La commande a échoué : {$commande}");
+        }
+    }
     /**
      * Créer un modèle
      */

@@ -201,7 +201,7 @@ if (!function_exists('flash')) {
     /**
      * Récupère un message flash
      */
-    function flash(string $type = null): ?string
+    function flash(?string $type = null): ?string
     {
         if ($type === null) {
             $flash = $_SESSION['flash'] ?? [];
