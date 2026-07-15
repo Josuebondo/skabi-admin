@@ -90,8 +90,7 @@ function showLoading() {
 // 🔹 Fetch initial et stockage local
 async function initData() {
   showLoading();
-  mouvements = JSON.parse(localStorage.getItem("mouvements") || "[]");
-  bons = JSON.parse(localStorage.getItem("bons") || "[]");
+
   if (bons.length === 0) {
     console.log("Récupération des données depuis l'API...");
     const response = await api.postData(
@@ -102,7 +101,6 @@ async function initData() {
 
     if (response && response.status === "success") {
       bons = response.data;
-      localStorage.setItem("bons", JSON.stringify(bons));
     } else {
       console.error("Erreur fetch initial :", response);
       return;
@@ -118,7 +116,6 @@ async function initData() {
 
     if (response && response.status === "success") {
       mouvements = response.data;
-      localStorage.setItem("mouvements", JSON.stringify(mouvements));
     } else {
       console.error("Erreur fetch initial :", response);
       return;
@@ -665,8 +662,6 @@ let dateActualisation = localStorage.getItem("dateActualisation")
 el("dateActualisation").innerText = dateActualisation.toLocaleTimeString();
 // 🔹 Rafraîchir les données depuis l'API
 async function refreshData() {
-  localStorage.removeItem("mouvements");
-  localStorage.removeItem("bons");
   localStorage.setItem("dateActualisation", new Date().toISOString());
 
   el("dateActualisation").textContent = dateActualisation.toLocaleTimeString();

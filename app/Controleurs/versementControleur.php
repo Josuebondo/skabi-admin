@@ -21,7 +21,7 @@ class versementControleur extends BaseControleur
     public function index()
     {
         $versement = versement::tout();
-        dd($versement);
+
         $data = [];
         foreach ($versement as $v) {
             $data['id'] = $v->id;
