@@ -894,7 +894,7 @@
         </div>
     </div>
     <script src="<?= asset('js/mouvement/Auth.js') ?>"></script>
-    <!-- <script src="<?= asset('/js/articles/app.js') ?>"></script> -->
+    <script src="<?= asset('/js/articles/app.js') ?>"></script>
 </body>
 
 </html>
