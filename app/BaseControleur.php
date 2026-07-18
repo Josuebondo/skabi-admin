@@ -147,7 +147,7 @@ class BaseControleur
     /**
      * Récupère une session
      */
-    protected function session(string $cle = null, $defaut = null)
+    protected function session(?string $cle = null, $defaut = null)
     {
         if ($cle === null) {
             return $_SESSION;
