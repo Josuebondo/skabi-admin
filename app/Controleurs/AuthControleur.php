@@ -17,6 +17,7 @@ class AuthControleur extends BaseControleur
      */
     public function index(Requete $requete, Reponse $response): string
     {
+
         return vue('auth.index');
     }
     function login(Requete $requete, Reponse $response)
@@ -25,6 +26,7 @@ class AuthControleur extends BaseControleur
             Session::vider();
             Session::detruire();
         }
+
         // session_start(); // toujours démarrer la session si tu utilises $_SESSION
         $data = $requete->tousCorps();
         $username = $data['username'] ?? '';
@@ -32,6 +34,8 @@ class AuthControleur extends BaseControleur
         $url = "https://stock.skabi.shop/users/loginapi"; // Projet A
 
         $result = auth_service()->connexion($username, $password);
+
+        return $response->json($result);
 
         // Rediriger vers la page d'accueil après la connexion
 

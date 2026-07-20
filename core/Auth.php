@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use App\Modeles\users;
 use App\Modeles\Utilisateur;
 
 /**
@@ -11,15 +12,15 @@ use App\Modeles\Utilisateur;
  */
 class Auth
 {
-    private static ?Utilisateur $utilisateur_connecte = null;
+    private static ?users $utilisateur_connecte = null;
 
     /**
      * Connecte un utilisateur
      */
-    public static function connecter(Utilisateur $utilisateur): void
+    public static function connecter(users $utilisateur): void
     {
-        $_SESSION['utilisateur_id'] = $utilisateur->id;
-        $_SESSION['utilisateur'] = $utilisateur->toArray();
+        session::demarrer();
+        session::enregistrer('utilisateur_id', $utilisateur->id);
         self::$utilisateur_connecte = $utilisateur;
     }
 

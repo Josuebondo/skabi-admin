@@ -249,7 +249,7 @@ if (!function_exists('auth')) {
      */
     function auth()
     {
-        return \Core\Auth::utilisateur();
+        return auth_service()->getAuth();
     }
 }
 

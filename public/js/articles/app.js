@@ -138,21 +138,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPagination() {
-    const pagination = document.getElementById("pagination");
-    pagination.innerHTML = "";
+    const paginationDiv = document.getElementById("pagination");
+    paginationDiv.innerHTML = "";
 
     const totalPages = Math.ceil(articles.length / ARTICLES_PER_PAGE);
 
     // bouton précédent
-    const prevBtn = document.createElement("button");
-    prevBtn.textContent = "Précédent";
-    prevBtn.disabled = currentPage === 1;
-    prevBtn.className = "px-3 py-1 border rounded mr-2";
+    const prevBtn = document.getElementById("prev");
     prevBtn.onclick = () => {
       currentPage--;
       renderPage(currentPage);
     };
-    pagination.appendChild(prevBtn);
 
     // pages visibles autour de la page courante
     const maxButtons = 5;
@@ -160,29 +156,26 @@ document.addEventListener("DOMContentLoaded", () => {
     let endPage = Math.min(totalPages, startPage + maxButtons - 1);
 
     // ajuster si on est proche de la fin
-    startPage = Math.max(1, endPage - maxButtons + 1);
+    start = Math.max(1, endPage - maxButtons + 1);
 
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = start; i <= endPage; i++) {
       const btn = document.createElement("button");
-      btn.textContent = i;
-      btn.className = `px-3 py-1 border rounded mr-2 ${i === currentPage ? "bg-blue-500 text-white" : ""}`;
-      btn.onclick = () => {
-        currentPage = i;
-        renderPage(currentPage);
-      };
-      pagination.appendChild(btn);
+      btn.className = `w-8 h-8 flex items-center justify-center rounded-lg text-[10px] font-bold ${
+        i === currentPage
+          ? "bg-primary text-white"
+          : "border border-slate-700 hover:bg-slate-800 text-slate-500"
+      }`;
+      btn.innerText = i;
+      btn.addEventListener("click", () => renderPage(i));
+      paginationDiv.appendChild(btn);
     }
 
     // bouton suivant
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "Suivant";
-    nextBtn.disabled = currentPage === totalPages;
-    nextBtn.className = "px-3 py-1 border rounded";
+    const nextBtn = document.getElementById("next");
     nextBtn.onclick = () => {
       currentPage++;
       renderPage(currentPage);
     };
-    pagination.appendChild(nextBtn);
   }
 
   load();

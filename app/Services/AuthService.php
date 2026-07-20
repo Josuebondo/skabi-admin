@@ -5,9 +5,8 @@ namespace App\Services;
 use Bmvc\BAuth\Adapters\BMVC\BmvcAuthProvider;
 use Bmvc\BAuth\Auth as BAuth;
 use Bmvc\BAuth\Config as BAuthConfig;
-use Bmvc\BAuth\Exceptions\AuthenticationException;
-use Bmvc\BAuth\Providers\BaseAuthProvider;
 use Core\Validateur;
+use Core\Session;
 
 /**
  * Service d'Authentification
@@ -25,7 +24,7 @@ class AuthService
     {
         $config = new BAuthConfig([
             'jwt' => [
-                'secret' => env('AUTH_JWT_SECRET', 'dev-secret-change-me'),
+                'secret' => env('AUTH_JWT_SECRET'),
                 'expiresIn' => self::ACCESS_TOKEN_EXPIRES,
                 'algorithm' => 'HS256',
             ],
@@ -45,94 +44,63 @@ class AuthService
      */
     public function connexion(string $identifiant, string $motDePasse): array
     {
-        return $this->connecterViaBauth($identifiant, $motDePasse);
-    }
-
-    public function connecterViaBauth(string $identifiant, string $motDePasse): array
-    {
-        $auth = $this->creerAuthBauth();
-        return $auth->login($identifiant, $motDePasse);
-    }
-
-    public function deconnecterViaBauth(): void
-    {
-        $this->creerAuthBauth()->logout();
-    }
-
-    public function creerAuthBauth(): BAuth
-    {
-        $config = new BAuthConfig([
-            'jwt' => [
-                'secret' => env('AUTH_JWT_SECRET', 'admin-skabi-secret'),
-                'expiresIn' => 3600,
-            ],
-            'session' => [
-                'name' => 'skabi_auth',
-                'lifetime' => 7200,
-            ],
-        ]);
-
-        $provider = new class($config) extends BaseAuthProvider {
-            public function authenticate(string $identifier, string $password): bool
-            {
-                $userData = \App\Modeles\users::verifierIdentifiants($identifier, $password);
-
-                if (!$userData) {
-                    throw new AuthenticationException('Identifiants incorrects');
-                }
-
-                $this->user = $this->normaliserUtilisateur($userData);
-                return true;
+        try {
+            if (session::estActive()) {
+                session::vider();
+                session::detruire();
             }
-
-            public function getUserByIdentifier(string $identifier): ?array
-            {
-                return null;
-            }
-
-            public function getUserByEmail(string $email): ?array
-            {
-                return null;
-            }
-
-            public function getUserById(mixed $id): ?array
-            {
-                return null;
-            }
-
-            public function createUser(array $userData): ?array
-            {
-                return null;
-            }
-
-            public function updateUser(mixed $userId, array $data): bool
-            {
-                return false;
-            }
-
-            public function deleteUser(mixed $userId): bool
-            {
-                return false;
-            }
-
-            private function normaliserUtilisateur(array $userData): array
-            {
+            $result = $this->auth->login($identifiant, $motDePasse);
+            $user = $result['user'] ?? null;
+            if ($user) {
+                $jwtPayload = [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'role' => $user['role'],
+                ];
+                $jwtprovider = $this->auth->getTokenProvider();
+                $accessToken = $jwtprovider->generate($jwtPayload, self::ACCESS_TOKEN_EXPIRES);
+                $refreshToken = $jwtprovider->generate($jwtPayload, self::REFRESH_TOKEN_EXPIRES);
+                // $this->auth->getSessionProvider()->start($user, $accessToken);
+                session::demarrer();
+                session::enregistrer('access_token', $accessToken);
+                session::enregistrer('refresh_token', $refreshToken);
+                session::enregistrer('auth_user', $user);
                 return [
-                    'id' => $userData['id'] ?? $userData['user_id'] ?? $userData['uuid'] ?? null,
-                    'username' => $userData['username'] ?? $userData['email'] ?? $userData['name'] ?? '',
-                    'email' => $userData['email'] ?? '',
-                    'name' => $userData['name'] ?? $userData['username'] ?? '',
-                    'role' => $userData['role'] ?? $userData['roles'] ?? null,
-                    'raw' => $userData,
+                    'success' => true,
+                    'message' => 'Connexion réussie',
+                    'data' => [
+                        'id' => $user['id'],
+                        'username' => $user['username'],
+                        'email' => $user['email'],
+                        'nom' => $user['nom_complet'],
+                        'photo' => $user['photo'],
+                        'role' => $user['role'],
+                        'access_token' => $accessToken,
+                        'refresh_token' => $refreshToken,
+                        'redirection' => session::obtenir('url_intended'),
+
+
+                    ],
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Identifiant ou mot de passe incorrect',
                 ];
             }
-        };
-
-        $auth = new BAuth($config);
-        $auth->setAuthProvider($provider);
-
-        return $auth;
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la connexion: ' . $e->getMessage(),
+            ];
+        }
     }
+
+
+
+
+
 
     /**
      * Valide les données de connexion
@@ -160,5 +128,9 @@ class AuthService
         $v->valider($donnees);
 
         return $v;
+    }
+    public  function getAuth(): BAuth
+    {
+        return $this->auth;
     }
 }

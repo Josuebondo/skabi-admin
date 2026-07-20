@@ -23,7 +23,8 @@
     }
   ],
   "require": {
-    "php": ">=8.0"
+    "php": ">=8.0",
+    "bmvc/bauth": "^1.2"
   },
   "autoload": {
     "psr-4": {

@@ -740,14 +740,16 @@
                     <p id="pagination-info" class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
                         Articles: 1-16 / 1240
                     </p>
-                    <div class="flex items-center gap-1" id="pagination">
-                        <!-- Les boutons seront générés par JS -->
+                    <div class="flex gap-2">
+                        <button id="prev" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-500"><span class="material-icons text-sm">chevron_left</span></button>
+                        <div id="pagination" class=" flex gap-2 flex-row">
+                            <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-[10px] font-bold">1</button>
+                        </div>
+                        <button id="next" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-500"><span class="material-icons text-sm">chevron_right</span></button>
                     </div>
                 </div>
             </main>
-            <footer class="mt-auto py-4 border-t border-slate-200 dark:border-slate-800 text-center">
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">© 2024 Gestion de Stock - Haute Densité</p>
-            </footer>
+
             <div class="fixed hidden inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
                 <div class="w-full max-w-4xl bg-modal-dark border border-slate-800 shadow-2xl rounded-xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800">

@@ -19,6 +19,7 @@ async function login(username, password) {
 
     const data = await res.json();
     console.log("Réponse login :", data);
+    // return;
     if (data.success == true) {
       if (data.data.role != "admin") {
         console.log("Rôle de l'utilisateur :", data.data.role);
