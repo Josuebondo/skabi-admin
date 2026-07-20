@@ -31,82 +31,10 @@ class AuthControleur extends BaseControleur
         $password = $data['password'] ?? '';
         $url = "https://stock.skabi.shop/users/loginapi"; // Projet A
 
-        $payload = json_encode([
-            "username" => $username,
-            "password" => $password
-        ]);
-        // dd($payload);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json",
-            "X-API-KEY: ADMIN_SECRET_2026"
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        $result = auth_service()->connexion($username, $password);
 
-        $apiResponse = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // Rediriger vers la page d'accueil après la connexion
 
-        header('Content-Type: application/json');
-        if ($apiResponse === false) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Erreur de connexion à l'API"
-            ]);
-            return;
-        }
-        if ($httpCode === 401) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Identifiants incorrects"
-            ]);
-            return;
-        }
-
-        if ($httpCode !== 200) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Erreur API  ($httpCode)",
-                'response' => $apiResponse
-
-
-
-            ]);
-            return;
-        }
-
-        $data = json_decode($apiResponse, true);
-
-        if (!$data) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Réponse API invalide",
-                'response' => $apiResponse
-            ]);
-            return;
-        }
-        // $response->json($data);
-        if (!empty($data['status']) && $data['status'] === true) {
-            session::demarrer();
-            session::enregistrer('user', $data['data']);
-
-
-            echo json_encode([
-                "success" => true,
-                "message" => "connexion réussie",
-                "data" => session::obtenir('user')
-
-            ]);
-            return;
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => $data['message'] ?? "Identifiants incorrects"
-            ]);
-            return;
-        }
     }
     public function logout(Requete $requete, Reponse $response)
     {
