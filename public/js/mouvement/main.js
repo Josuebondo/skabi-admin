@@ -127,7 +127,7 @@ async function initData() {
   filteredBons = [...bons];
   renderPage(1);
   renderBons(1);
-  console.log("Mouvements chargés :", mouvements, "bons chargés :", bons);
+  // console.log("Mouvements chargés :", mouvements, "bons chargés :", bons);
   // console.log(bons);
 }
 
@@ -906,14 +906,14 @@ async function validateBons(id) {
       { id: id, user_id: userid },
     );
     // const data = await response.text();
-    console.log("response avnt:", response);
+    // console.log("response avnt:", response);
 
     if (response && response.success === true) {
       el("b-btntxt").textContent = "Actualisation...";
       await refreshData();
       await new Promise((r) => setTimeout(r, 500));
 
-      // showtoast("Mouvement validé avec succès !", "success");
+      showtoast("Mouvement validé avec succès !", "success");
       // alert("Mouvement validé avec succès !");
       // console.log("rep apres", response);
       el("b-validate-btn").disabled = false;
