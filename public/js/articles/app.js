@@ -52,38 +52,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const searchInput = el("search-input");
 
+  const articles = data.data;
+  let filteredArticles = articles;
+
   searchInput.addEventListener("input", function () {
     const value = this.value.toLowerCase().trim();
 
-    articles = articles.filter((a) => {
+    filteredArticles = articles.filter((a) => {
       return (
-        a.nom?.toLowerCase().includes(value) ||
-        String(a.id).toLowerCase().includes(value)
+        a.nom?.toLowerCase().includes(value) || String(a.id).includes(value)
       );
     });
 
     currentPage = 1;
     renderPage(currentPage);
-  });
-  searchInput.addEventListener("keydown", (e) => {
-    if (e.key == "enter") {
-      const value = this.value.toLowerCase().trim();
-      if (value == null) {
-        articles = data.data;
-        currentPage = 1;
-        renderPage(currentPage);
-        return;
-      }
-      articles = articles.filter((a) => {
-        return (
-          a.nom?.toLowerCase().includes(value) ||
-          String(a.id).toLowerCase().includes(value)
-        );
-      });
-      console.log(articles);
-      currentPage = 1;
-      renderPage(currentPage);
-    }
   });
 
   function renderPage(page) {
@@ -95,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const end = Math.min(currentPage * ARTICLES_PER_PAGE, articles.length);
     info.textContent = `Articles: ${start}-${end} / ${articles.length}`;
 
-    const pageArticles = articles.slice(start, end);
+    const pageArticles = filteredArticles.slice(start, end);
 
     pageArticles.forEach((d) => {
       const item = document.createElement("div");
@@ -141,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
 
-    const totalPages = Math.ceil(articles.length / ARTICLES_PER_PAGE);
+    const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
 
     // bouton précédent
     const prevBtn = document.createElement("button");
