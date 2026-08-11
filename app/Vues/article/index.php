@@ -745,9 +745,6 @@
                     </div>
                 </div>
             </main>
-            <footer class="mt-auto py-4 border-t border-slate-200 dark:border-slate-800 text-center">
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">© 2024 Gestion de Stock - Haute Densité</p>
-            </footer>
             <div class="fixed hidden inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
                 <div class="w-full max-w-4xl bg-modal-dark border border-slate-800 shadow-2xl rounded-xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800">
