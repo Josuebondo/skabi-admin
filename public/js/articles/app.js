@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const searchInput = el("search-input");
 
-  const articles = data.data;
   let filteredArticles = articles;
 
   searchInput.addEventListener("input", function () {
