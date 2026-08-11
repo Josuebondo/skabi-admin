@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let data = await res.json();
     console.log(data);
     articles = data.data; // tableau d'articles
+    let filteredArticles = articles;
     localStorage.removeItem("articles");
     localStorage.setItem("articles", JSON.stringify(data.data));
 
@@ -51,8 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return document.getElementById(id);
   }
   const searchInput = el("search-input");
-
-  let filteredArticles = articles;
 
   searchInput.addEventListener("input", function () {
     const value = this.value.toLowerCase().trim();
