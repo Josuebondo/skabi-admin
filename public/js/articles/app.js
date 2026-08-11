@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ARTICLES_PER_PAGE = 25; // articles par page
   let currentPage = 1;
   let articles = [];
-
+  let filteredArticles = [];
   function showLoading() {
     const container = document.getElementById("grid-container");
     container.innerHTML = "";
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let data = await res.json();
     console.log(data);
     articles = data.data; // tableau d'articles
-    let filteredArticles = articles;
+    filteredArticles = articles;
     localStorage.removeItem("articles");
     localStorage.setItem("articles", JSON.stringify(data.data));
 
