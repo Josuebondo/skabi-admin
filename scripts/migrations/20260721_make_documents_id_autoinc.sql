@@ -1,0 +1,2 @@
+-- Migration: make documents.id AUTO_INCREMENT
+-- Run this SQL against your database (e.g., via mysql CLI or phpMyAdmin)

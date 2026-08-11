@@ -127,7 +127,7 @@ async function initData() {
   filteredBons = [...bons];
   renderPage(1);
   renderBons(1);
-  console.log("Mouvements chargés :", mouvements, "bons chargés :", bons);
+  // console.log("Mouvements chargés :", mouvements, "bons chargés :", bons);
   // console.log(bons);
 }
 
@@ -259,6 +259,11 @@ function renderPage(page) {
       statutElement.className =
         "text-xs font-bold text-accent-coral border border-accent-coral/40 px-1.5 py-0.5 rounded-md";
       statutElement.innerHTML = "Annulé";
+    } else if (m.statut == "vérifié") {
+      statutElement = document.createElement("span");
+      statutElement.className =
+        "text-xs font-bold text-blue-500 border border-blue-500/40 px-1.5 py-0.5 rounded-md";
+      statutElement.innerHTML = "Vérifié";
     } else {
       statutElement = document.createElement("span");
       statutElement.className =
@@ -322,7 +327,7 @@ function renderBons(page) {
       '<div class="col-span-full text-center text-slate-500 py-10">Aucun bon trouvé pour ces critères.</div>';
     return;
   }
-  console.log(pageData);
+  // console.log(pageData);
   pageData.forEach((b) => {
     const item = document.createElement("div");
 
@@ -364,6 +369,8 @@ function renderBons(page) {
     } else if (b.statut === "annulé") {
       statuscontainer.innerHTML = `
                                  <span class="text-xs font-bold text-accent-coral"> Annulé</span>`;
+    } else if (b.statut == "vérifié") {
+      statuscontainer.innerHTML = `<span class="text-xs font-bold text-blue-500"> Vérifié</span>`;
     }
 
     item.innerHTML = `
@@ -422,6 +429,9 @@ function ShowbonDetails(b) {
   } else if (b.statut === "annulé") {
     statuscontainer.innerHTML = `<span class="w-2 h-2 rounded-full bg-accent-coral"></span>
                                  <span class="text-xs font-bold text-accent-coral"> Annulé</span>`;
+  } else if (b.statut == "vérifié") {
+    statuscontainer.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                  <span class="text-xs font-bold text-blue-500"> Vérifié</span>`;
   }
 
   // ⚡ Détermination source et destination
@@ -515,7 +525,7 @@ function showdetails(m) {
     : "Inconnu";
 
   el("note").textContent = m.note || "Aucune note";
-
+  // console.log(m);
   if (m.statut == "validé") {
     el("status").className = "text-xs font-bold text-accent-emerald";
     m.statu = "Approuvé";
@@ -525,6 +535,9 @@ function showdetails(m) {
   } else if (m.statut == "annulé") {
     el("status").className = "text-xs font-bold text-accent-coral";
     m.statu = "Rejeté";
+  } else if (m.statut == "vérifié") {
+    el("status").className = "text-xs font-bold text-blue-500";
+    m.statu = "vérifié";
   }
   el("status").textContent = m.statu || "Inconnu";
   if (m.type === "entrée") {
@@ -849,8 +862,8 @@ async function deleteBon(id) {
 
 async function validateMouvement(id) {
   el("b-validate-btn").disabled = true;
-  el("b-btn-icon").textContent = "autorenew";
-  el("b-btn-icon").classList.add("spin");
+  el("b--v-btn-icon").textContent = "autorenew";
+  el("b--v-btn-icon").classList.add("spin");
   el("b-btntxt").textContent = "Validation...";
   let userid = JSON.parse(sessionStorage.getItem("currentUser")).user_id;
 
@@ -861,7 +874,7 @@ async function validateMouvement(id) {
       { id: id, user_id: userid },
     );
     // const data = await response.text();
-    // console.log("response avnt:", response);
+    console.log("response avnt:", response);
 
     if (response && response.success === true) {
       el("b-btntxt").textContent = "Actualisation...";
@@ -869,7 +882,7 @@ async function validateMouvement(id) {
       await new Promise((r) => setTimeout(r, 500));
       let mvn = getmovement(id);
       showdetails(mvn);
-      // showtoast("Mouvement validé avec succès !", "success");
+      showtoast("Mouvement validé avec succès !", "success");
       // alert("Mouvement validé avec succès !");
       // console.log("rep apres", response);
       el("validate-btn").disabled = false;

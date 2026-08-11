@@ -130,6 +130,32 @@ class BaseBD
             throw $this->gererErreur($e, $sql);
         }
     }
+    /** 
+     * creer une requete preparee et retourne le statement
+     */
+    public function requete(string $sql, array $params = []): \PDOStatement
+    {
+        try {
+            $stmt = $this->connexion->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (Exception $e) {
+            throw $this->gererErreur($e, $sql);
+        }
+    }
+    /**
+     * Récupère une seule valeur (colonne) d'une requête
+     */
+    public function valeur(string $sql, array $params = []): mixed
+    {
+        try {
+            $stmt = $this->connexion->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchColumn();
+        } catch (Exception $e) {
+            throw $this->gererErreur($e, $sql);
+        }
+    }
 
     /**
      * Récupère tous les résultats

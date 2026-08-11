@@ -49,20 +49,7 @@
 
 <body class="bg-background-dark text-slate-100 min-h-screen selection:bg-primary/30">
     <div class="relative flex min-h-screen w-full flex-col bg-mesh overflow-x-hidden">
-        <header class="flex items-center justify-between border-b border-primary/10 px-6 py-4 lg:px-20 backdrop-blur-md sticky top-0 z-50">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary">
-                    <span class="material-symbols-outlined text-3xl">inventory_2</span>
-                </div>
-                <h2 class="text-xl font-extrabold tracking-tight text-white">StockApp</h2>
-            </div>
-            <nav class="hidden md:flex items-center gap-8">
-                <a class="text-sm font-medium text-slate-400 hover:text-primary transition-colors" href="#">Aide &amp; Support</a>
-                <button class="bg-primary hover:bg-primary/90 text-background-dark px-5 py-2 rounded-lg text-sm font-bold transition-all">
-                    Se Connecter
-                </button>
-            </nav>
-        </header>
+
         <main class="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-20 max-w-4xl mx-auto w-full text-center">
             <div class="relative mb-12">
                 <div class="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-75 opacity-20"></div>
@@ -91,35 +78,17 @@
                 </p>
             </div>
             <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-                <a class="w-full sm:w-auto bg-primary hover:bg-primary/90 text-background-dark px-10 py-4 rounded-xl text-lg font-bold transition-all transform hover:scale-105 shadow-xl shadow-primary/20 flex items-center justify-center gap-2" href="/">
-                    <span class="material-symbols-outlined">home</span>
-                    Retour à l'accueil
-                </a>
+                <button class="w-full sm:w-auto bg-primary hover:bg-primary/90 text-background-dark px-10 py-4 rounded-xl text-lg font-bold transition-all flex items-center justify-center gap-2" onclick="history.back()">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour à la page précédente
+                </button>
                 <a class="w-full sm:w-auto border border-primary/30 hover:bg-primary/10 text-white px-10 py-4 rounded-xl text-lg font-bold transition-all flex items-center justify-center gap-2" href="#">
                     <span class="material-symbols-outlined">contact_support</span>
                     Contacter le support
                 </a>
             </div>
-            <div class="mt-16 pt-8 border-t border-primary/5 w-full">
-                <p class="text-sm text-slate-500 mb-4">Besoin d'aide pour localiser un colis ?</p>
-                <div class="flex flex-wrap justify-center gap-6 text-xs font-semibold uppercase tracking-widest text-primary/60">
-                    <a class="hover:text-primary transition-colors" href="#">Documentation</a>
-                    <a class="hover:text-primary transition-colors" href="#">Statut des Services</a>
-                    <a class="hover:text-primary transition-colors" href="#">FAQ</a>
-                </div>
-            </div>
         </main>
-        <footer class="border-t border-primary/10 py-8 px-6 lg:px-20 bg-white/[0.02] backdrop-blur-md mt-auto">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-3 opacity-60">
-                    <span class="material-symbols-outlined text-primary text-xl">inventory_2</span>
-                    <span class="font-bold text-white text-sm">StockApp</span>
-                </div>
-                <div class="text-xs text-slate-500">
-                    © 2024 StockApp. Erreur interne de routage [Code: 404_NOT_FOUND]
-                </div>
-            </div>
-        </footer>
+
     </div>
 
 </body>

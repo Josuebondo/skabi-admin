@@ -65,7 +65,7 @@ function renderCart() {
   cartData.items.forEach((item, index) => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-primary/5 transition-colors group";
-    console.log("redu");
+    console.log("redu", item);
     // Calcul du total (exemple si prix_unit existe dans vos données)
     const prixUnit = Number(item.prix) || 0;
     const totalHT = (prixUnit * (Number(item.qty) || 0)).toFixed(2);
@@ -324,6 +324,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 el("save-btn").addEventListener("click", () => {
   sauvegarder();
 });
+function showtoast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = `fixed bottom-5 right-5 px-4 py-2 rounded shadow-lg text-white ${type === "success" ? "bg-green-500" : "bg-red-500"}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
 async function sauvegarder() {
   try {
     // Calcul du total général
@@ -333,6 +343,11 @@ async function sauvegarder() {
     let des = null;
     if (Number(cartData.header.destination) !== 0) {
       des = Number(cartData.header.destination);
+    }
+    if (!cartData.header.date || !cartData.header.type) {
+      showtoast("Veuillez remplir la date et le type de document.", "error");
+
+      return;
     }
     let data = {
       date: cartData.header.date ?? new Date().toISOString().slice(0, 10), // par défaut aujourd'hui si date absente
@@ -345,6 +360,7 @@ async function sauvegarder() {
       items: cartData.items ?? [], // s'assure que c'est toujours un tableau
     };
     console.log(data);
+    // return; // pour éviter l'envoi pendant le test
     let req = await fetch("/document", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -354,7 +370,7 @@ async function sauvegarder() {
     // if (!req.ok) throw new Error("Erreur serveur");
 
     let res = await req.text();
-    // console.log(res);
+    console.log(res);
     // return;
     // vider le panier après succès
     localStorage.removeItem("cart");

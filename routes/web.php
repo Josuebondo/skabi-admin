@@ -48,6 +48,7 @@ Routeur::obtenir('/api/articles', 'articleControleur@getAll')->nom('article.api'
 
 
 Routeur::obtenir('/dashboard', 'dashboardControleur@index')->nom('dashbord.gerent');
+Routeur::obtenir('/dashboard/data', 'dashboardControleur@getData')->nom('dashbord.gerent');
 Routeur::obtenir('/test', 'dashboardControleur@test')->nom('dashbord.test');
 // versement
 Routeur::obtenir('/versements', 'versementControleur@index')->nom('versement');

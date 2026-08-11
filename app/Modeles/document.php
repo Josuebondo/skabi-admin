@@ -14,9 +14,9 @@ class document extends Modele
     protected string $table = 'documents';
     public static function entrepot()
     {
-        $bd = BaseBD::obtenir();
-        $sql = 'SELECT * FROM entrepots';
-        return $bd->tous($sql);
+
+        // Utiliser le modèle `entrepot` (ORM) plutôt qu'une requête SQL brute
+        return entrepot::tout();
     }
 
     public static function creerDoc($data, $items)
@@ -88,7 +88,7 @@ class document extends Modele
     }
 
     // Mise à jour de la vérification d'unicité
-    private static function documentExisteBon($code): bool
+    private static function documentExisteBon(string $code): bool
     {
         $r = document::ou('numero', $code)->premier();
         if (!$r) {
@@ -107,17 +107,16 @@ class document extends Modele
             // Gérer le cas où le document n'existe pas
         }
     }
-    public static function addItems($documentId, $items)
+    public static function addItems(int $documentId, array $items)
     {
-        $bd = BaseBD::obtenir();
-        $sql = 'INSERT INTO document_items (document_id, article_id, quantite, prix, page) VALUES(:doc, :art, :qty, :prix, :page)';
-        $params = [
-            ':doc' => $documentId,
-            ':art' => $items['id'],
-            ':qty' => $items['qty'],
-            ':prix' => $items['prix'],
-            ':page' => $items['num']
-        ];
-        return $bd->executer($sql, $params);
+
+        // Utiliser le modèle `document_item` pour insérer via l'ORM
+        return document_item::creer([
+            'document_id' => $documentId,
+            'article_id' => $items['id'],
+            'quantite' => $items['qty'],
+            'prix' => $items['prix'],
+            'page' => $items['num']
+        ]);
     }
 }

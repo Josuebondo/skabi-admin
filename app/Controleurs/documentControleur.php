@@ -4,6 +4,7 @@ namespace App\Controleurs;
 
 use App\BaseControleur;
 use App\Modeles\document;
+use App\Modeles\entrepot;
 use Core\Reponse;
 use Core\Requete;
 use Core\BaseBD;
@@ -19,7 +20,7 @@ class documentControleur extends BaseControleur
     public function index()
     {
         // $document = document::tout();
-        $entrepot = document::entrepot();
+        $entrepot = entrepot::tous();
         // $entrepot = json($ent);
         // dd($entrepot);
         return vue('document.index', $entrepot);
@@ -49,7 +50,8 @@ class documentControleur extends BaseControleur
                 'source_id' => $d['source'] ?? null,
                 'destination_id' => $d['destination'] ?? null,
                 'total' => $d['total'] ?? 0,
-                'date_document' => $d['date'] ?? date('Y-m-d'),
+                // Ensure a valid DATETIME value (MySQL strict mode rejects '0000-00-00 00:00:00')
+                'date_document' => !empty($d['date']) ? date('Y-m-d H:i:s', strtotime($d['date'])) : date('Y-m-d H:i:s'),
                 'statut' => 'brouillon',
                 'type' => $d['type'] ?? 'standard',
             ];
@@ -92,71 +94,40 @@ class documentControleur extends BaseControleur
     }
     public function brouillons()
     {
-        $d = BaseBD::obtenir();
+        // Utiliser l'ORM BMVC pour récupérer les documents brouillons et leurs items
+        $docs = \App\Modeles\document::ou('statut', 'brouillon')->trierPar('id', 'ASC')->obtenir();
 
-        $sql = "SELECT 
-            d.id AS document_id,
-            d.numero,
-            d.type,
-            d.statut,
-            d.total,
-            d.user_id,
-            d.date_document,
-            d.created_at,
-            di.id AS item_id,
-            di.quantite,
-            di.prix,
-            di.page,
-            a.id AS article_id,
-            a.article AS article_nom
-        FROM documents d
-        LEFT JOIN document_items di ON di.document_id = d.id
-        LEFT JOIN articles a ON a.id = di.article_id
-        WHERE d.statut = 'brouillon'
-        ORDER BY d.id, di.id";
+        $result = [];
 
-        $rows = $d->tous($sql);
-        // dd($rows);
-        $documents = [];
+        foreach ($docs as $doc) {
+            $items = $doc->aPlusieurs('App\\Modeles\\document_item', 'document_id', 'id');
 
-        foreach ($rows as $row) {
+            $itemList = [];
+            foreach ($items as $it) {
+                $article = \App\Modeles\article::trouver($it->article_id);
 
-            $docId = $row['document_id'];
-
-            if (!isset($documents[$docId])) {
-                $documents[$docId] = [
-                    'id' => $row['document_id'],
-                    'numero' => $row['numero'],
-                    'type' => $row['type'],
-                    'statut' => $row['statut'],
-                    'total' => $row['total'],
-                    'user_id' => $row['user_id'],
-                    'date_document' => $row['date_document'],
-                    'created_at' => $row['created_at'],
-                    'items' => []
+                $itemList[] = [
+                    'id' => $article->id ?? $it->article_id,
+                    'quantite' => $it->quantite,
+                    'prix' => $it->prix,
+                    'article' => $article->article ?? null,
+                    'page' => $it->page
                 ];
             }
 
-            if ($row['item_id']) {
-
-                $documents[$docId]['items'][] = [
-                    'id' => $row['article_id'],
-                    'quantite' => $row['quantite'],
-                    'prix' => $row['prix'],
-                    'article' => $row['article_nom'],
-                    'page' => $row['page']
-
-                ];
-            }
+            $result[] = [
+                'id' => $doc->id,
+                'numero' => $doc->numero,
+                'type' => $doc->type,
+                'statut' => $doc->statut,
+                'total' => $doc->total,
+                'user_id' => $doc->user_id,
+                'date_document' => $doc->date_document,
+                'created_at' => $doc->created_at,
+                'items' => $itemList
+            ];
         }
 
-        $documents = array_values($documents);
-
-
-
-
-        $documents = array_values($documents);
-        $data = json($documents);
-        echo $data;
+        return json($result);
     }
 }
