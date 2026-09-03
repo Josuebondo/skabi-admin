@@ -3,117 +3,74 @@
 namespace App\Controleurs;
 
 use App\BaseControleur;
+use App\Services\AuthService;
+use Bmvc\BAuth\Exceptions\AuthenticationException;
 use Core\Requete;
 use Core\Reponse;
 use Core\Session;
 
 /**
- * AuthControleur Contrôleur
+ * Gère les connexions et déconnexions des administrateurs.
  */
 class AuthControleur extends BaseControleur
 {
-    /**
-     * Exemple d'action
-     */
     public function index(Requete $requete, Reponse $response): string
     {
         return vue('auth.index');
     }
-    function login(Requete $requete, Reponse $response)
+
+    /**
+     * Authentifie l'utilisateur au moyen du service d'authentification.
+     */
+    public function login(Requete $requete, Reponse $response): void
     {
         if (Session::estActive()) {
             Session::vider();
             Session::detruire();
         }
-        // session_start(); // toujours démarrer la session si tu utilises $_SESSION
+
         $data = $requete->tousCorps();
-        $username = $data['username'] ?? '';
-        $password = $data['password'] ?? '';
-        $url = "https://stock.skabi.shop/users/loginapi"; // Projet A
+        $identifiant = trim((string) ($data['username'] ?? ''));
+        $motDePasse = (string) ($data['password'] ?? '');
 
-        $payload = json_encode([
-            "username" => $username,
-            "password" => $password
-        ]);
-        // dd($payload);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Content-Type: application/json",
-            "X-API-KEY: ADMIN_SECRET_2026"
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-
-        $apiResponse = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        header('Content-Type: application/json');
-        if ($apiResponse === false) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Erreur de connexion à l'API"
-            ]);
-            return;
-        }
-        if ($httpCode === 401) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Identifiants incorrects"
-            ]);
+        if ($identifiant === '' || $motDePasse === '') {
+            $response->json([
+                'success' => false,
+                'message' => 'Veuillez renseigner votre identifiant et votre mot de passe.',
+            ], 422);
             return;
         }
 
-        if ($httpCode !== 200) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Erreur API  ($httpCode)",
-                'response' => $apiResponse
+        try {
+            $resultat = (new AuthService())->connexion($identifiant, $motDePasse);
+            $utilisateur = $resultat['user'] ?? null;
 
+            if (!$utilisateur) {
+                throw new AuthenticationException('Identifiants incorrects');
+            }
 
+            Session::demarrer();
+            Session::enregistrer('user', $utilisateur);
 
+            $response->json([
+                'success' => true,
+                'message' => 'Connexion réussie',
+                'data' => $utilisateur,
             ]);
-            return;
-        }
-
-        $data = json_decode($apiResponse, true);
-
-        if (!$data) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Réponse API invalide",
-                'response' => $apiResponse
-            ]);
-            return;
-        }
-        // $response->json($data);
-        if (!empty($data['status']) && $data['status'] === true) {
-            session::demarrer();
-            session::enregistrer('user', $data['data']);
-
-
-            echo json_encode([
-                "success" => true,
-                "message" => "connexion réussie",
-                "data" => session::obtenir('user')
-
-            ]);
-            return;
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => $data['message'] ?? "Identifiants incorrects"
-            ]);
-            return;
+        } catch (AuthenticationException) {
+            $response->json([
+                'success' => false,
+                'message' => 'Identifiants incorrects',
+            ], 401);
         }
     }
-    public function logout(Requete $requete, Reponse $response)
+
+    public function logout(Requete $requete, Reponse $response): void
     {
+        (new AuthService())->deconnecterViaBauth();
         Session::demarrer();
         Session::vider();
         Session::detruire();
-        header('Location: /login');
-        exit;
+        $response->redirection('/login');
     }
 }
